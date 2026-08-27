@@ -1,0 +1,52 @@
+{
+  "name": "orderly-js-sdk-nextjs-template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "copyLocales": "node scripts/copyLocales.js",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@orderly.network/affiliate": "^2.8.14",
+    "@orderly.network/hooks": "^2.8.14",
+    "@orderly.network/i18n": "^2.8.14",
+    "@orderly.network/markets": "^2.8.14",
+    "@orderly.network/portfolio": "^2.8.14",
+    "@orderly.network/react-app": "^2.8.14",
+    "@orderly.network/trading": "^2.8.14",
+    "@orderly.network/trading-leaderboard": "^2.8.14",
+    "@orderly.network/trading-rewards": "^2.8.14",
+    "@orderly.network/types": "^2.8.14",
+    "@orderly.network/ui": "^2.8.14",
+    "@orderly.network/ui-scaffold": "^2.8.14",
+    "@orderly.network/utils": "^2.8.14",
+    "@orderly.network/wallet-connector": "^2.8.14",
+    "next": "15.4.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6",
+    "fs-extra": "^11.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ]
+  }
+}
