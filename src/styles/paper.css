@@ -1,0 +1,294 @@
+/* ============================================================
+   PAPER MODE, brutalist styling per THEME-SPEC.md
+   ============================================================ */
+
+.tt-paper-toggle {
+  position: fixed;
+  top: 10px;
+  right: 200px;
+  z-index: 60;
+  font-family: var(--tt-display);
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  background: var(--tt-panel);
+  color: #000;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.tt-paper-toggle.on {
+  background: var(--tt-orange);
+  color: #000;
+}
+.tt-paper-toggle:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000;
+}
+
+.tt-paper-banner {
+  position: sticky;
+  top: 0;
+  z-index: 55;
+  background: var(--tt-orange);
+  color: #000;
+  border-top: 3px solid #000;
+  border-bottom: 4px solid #000;
+  font-family: var(--tt-display);
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  text-align: center;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+
+.tt-paper-panel {
+  position: fixed;
+  top: 110px;
+  right: 12px;
+  width: 330px;
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+  z-index: 50;
+  background: var(--tt-panel);
+  border: 4px solid #000;
+  box-shadow: 7px 8px 0 #000;
+  padding: 14px;
+  font-family: var(--tt-cond);
+  color: #000;
+}
+
+.tt-paper-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--tt-display);
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  border-bottom: 3px solid #000;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.tt-paper-reset {
+  font-family: var(--tt-display);
+  font-size: 13px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 var(--tt-orange);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.tt-paper-offline {
+  font-family: var(--tt-display);
+  font-size: 18px;
+  color: var(--tt-orange);
+  padding: 20px 0;
+  text-align: center;
+}
+
+.tt-paper-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tt-paper-stats > div {
+  border: 2px solid #000;
+  background: var(--tt-row);
+  padding: 6px;
+}
+.tt-paper-stats label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.tt-paper-stats b {
+  font-family: var(--tt-mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tt-paper-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 8px;
+}
+.tt-paper-tabs button {
+  flex: 1;
+  font-family: var(--tt-display);
+  font-size: 14px;
+  padding: 7px 0;
+  background: var(--tt-panel);
+  border: 2px solid #000;
+  cursor: pointer;
+}
+.tt-paper-tabs button.active {
+  background: #000;
+  color: #fff;
+}
+
+.tt-paper-sides {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tt-paper-sides button {
+  flex: 1;
+  font-family: var(--tt-display);
+  font-size: 18px;
+  padding: 8px 0;
+  border: 3px solid #000;
+  background: var(--tt-panel);
+  cursor: pointer;
+  opacity: 0.55;
+}
+.tt-paper-sides button.active {
+  opacity: 1;
+  box-shadow: 4px 4px 0 #000;
+}
+.tt-paper-sides .long.active {
+  background: var(--tt-green-long);
+}
+.tt-paper-sides .short.active {
+  background: var(--tt-orange);
+}
+
+.tt-paper-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin: 6px 0 3px;
+}
+.tt-paper-input {
+  width: 100%;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: var(--tt-mono);
+  font-size: 20px;
+  padding: 7px 9px;
+  box-sizing: border-box;
+}
+.tt-paper-slider {
+  width: 100%;
+  accent-color: var(--tt-orange);
+}
+
+.tt-paper-submit {
+  width: 100%;
+  margin-top: 10px;
+  font-family: var(--tt-display);
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  padding: 12px 0;
+  border: 3px solid #000;
+  box-shadow: 5px 5px 0 #000;
+  cursor: pointer;
+  color: #000;
+}
+.tt-paper-submit.long {
+  background: var(--tt-green-long);
+}
+.tt-paper-submit.short {
+  background: var(--tt-orange);
+}
+.tt-paper-submit:disabled {
+  opacity: 0.5;
+}
+.tt-paper-submit:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 #000;
+}
+
+.tt-paper-msg {
+  margin-top: 8px;
+  border: 2px solid #000;
+  background: #000;
+  color: #fff;
+  font-family: var(--tt-mono);
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.tt-paper-section {
+  margin-top: 12px;
+  border-top: 3px solid #000;
+  padding-top: 8px;
+}
+.tt-paper-subhead {
+  font-family: var(--tt-display);
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.tt-paper-pos {
+  border: 2px solid #000;
+  background: var(--tt-row);
+  padding: 6px 8px;
+  margin-bottom: 6px;
+}
+.tt-paper-pos .row1 {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+}
+.tt-paper-pos .row2 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: var(--tt-mono);
+  font-size: 11.5px;
+  margin-top: 3px;
+}
+.tt-paper-pos button {
+  margin-left: auto;
+  font-family: var(--tt-display);
+  font-size: 12px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  padding: 3px 9px;
+  cursor: pointer;
+}
+
+.tt-paper-hist {
+  display: grid;
+  grid-template-columns: 34px 60px 1fr auto;
+  gap: 6px;
+  font-family: var(--tt-mono);
+  font-size: 11px;
+  border-bottom: 1px solid var(--tt-grid);
+  padding: 3px 0;
+}
+
+.tt-paper-panel .pos { color: var(--tt-green); }
+.tt-paper-panel .neg { color: var(--tt-orange); }
+
+/* While paper mode is on, dim + block the SDK order entry column so the
+   paper panel is unambiguously the active ticket. */
+body.tt-paper-on [class*="oui-trading"] aside,
+body.tt-paper-on .oui-order-entry-form,
+body.tt-paper-on [class*="orderEntry"] {
+  pointer-events: none;
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+@media (max-width: 768px) {
+  .tt-paper-toggle {
+    top: auto;
+    bottom: 72px;
+    right: 10px;
+  }
+  .tt-paper-panel {
+    top: auto;
+    bottom: 110px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-height: 55vh;
+  }
+}
