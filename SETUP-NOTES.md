@@ -110,3 +110,12 @@ Known styling gaps:
   actual wallet flows need a browser, only SSR render was verified headlessly.
 - Testnet USDC faucet is available in-app once a wallet is connected (Orderly
   testnet standard flow).
+
+## DEPLOY (2026-08-27, Render)
+
+- Live URL: https://trench-terminal.onrender.com (/ 307-redirects to /en/perp/PERP_ETH_USDC)
+- Render service id: srv-da8ea30ae00c73cme410 (web service, Docker runtime, free plan, Oregon, Rasta's Render account "Jermain's workspace")
+- Dashboard: https://dashboard.render.com/web/srv-da8ea30ae00c73cme410
+- GitHub repo: https://github.com/bentoetf/trench-terminal (branch master, autodeploy on push, bentoetf account)
+- Env vars set on service: NEXT_PUBLIC_ORDERLY_BROKER_ID=orderly, NEXT_PUBLIC_ORDERLY_BROKER_NAME=Trench Terminal, NEXT_PUBLIC_ORDERLY_NETWORK=testnet
+- Caveats: free tier spins down when idle, first hit after sleep takes ~30-60s cold start; Docker build ~5 min per deploy.
