@@ -60,6 +60,20 @@ nav a, nav button {
   font-weight: 800;
 }
 
+/* active nav item: the SDK renders it as transparent gradient-clip text,
+   which our gradient flattening makes invisible. Per theme spec: orange
+   fill, black text, square. */
+header [data-actived="true"] {
+  background: var(--tt-orange) !important;
+}
+header [data-actived="true"] span {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+}
+
 /* main content area */
 .oui-scaffold-root, main {
   background: var(--tt-cream) !important;
@@ -605,4 +619,41 @@ button[id*="buy" i][role="tab"], button[id*="sell" i][role="tab"] {
 /* black interval/price pills on chart stay square and bordered */
 [class*="oui-tooltip"], [class*="price-label"] {
   border-radius: 0 !important;
+}
+
+/* teal gradient connect-wallet banner (mobile portfolio/trade): flatten to
+   a black brutalist strip with orange square marker */
+[class*="oui-bg-[linear-gradient"] {
+  background: var(--tt-black) !important;
+  background-image: none !important;
+  border: 2px solid #000;
+}
+[class*="oui-bg-[linear-gradient"] * {
+  color: #fff !important;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+/* mobile bottom nav (footer.oui-scaffold-bottomNav): heavy top border,
+   black icons/labels, uppercase */
+footer.oui-scaffold-bottomNav {
+  border-top: 4px solid #000 !important;
+  background: var(--tt-panel) !important;
+}
+footer.oui-scaffold-bottomNav span,
+footer.oui-scaffold-bottomNav div {
+  text-transform: uppercase;
+  font-weight: 800;
+}
+footer.oui-scaffold-bottomNav svg path {
+  fill-opacity: 1 !important;
+}
+footer.oui-scaffold-bottomNav * { color: #000 !important; }
+
+/* bottom nav glyphs are painted white by the SDK: repaint black,
+   keep the active-orange accents (fill uses currentColor sometimes) */
+footer.oui-scaffold-bottomNav svg path[fill="#fff"],
+footer.oui-scaffold-bottomNav svg path[fill="white"],
+footer.oui-scaffold-bottomNav svg path[fill="#FFF"] {
+  fill: #000 !important;
 }
