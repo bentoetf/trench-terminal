@@ -20,16 +20,62 @@ const fmt = (n: number, d = 2) =>
 
 export function PaperToggle() {
   const { available, enabled, setEnabled } = usePaperMode();
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+
+  // Mount the toggle INSIDE the SDK header's right-side flex cluster so it
+  // occupies real layout space on every page (trade, portfolio, markets,
+  // leaderboard) instead of floating over other header widgets.
+  useEffect(() => {
+    if (!available) return;
+    let dead = false;
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const mount = () => {
+      if (dead) return;
+      const header = document.querySelector<HTMLElement>(
+        ".oui-scaffold-topNavbar header, .oui-scaffold-topNavbar",
+      );
+      const right = header?.lastElementChild as HTMLElement | null;
+      if (right) {
+        let s = right.querySelector<HTMLElement>(".tt-paper-toggle-slot");
+        if (!s) {
+          s = document.createElement("span");
+          s.className = "tt-paper-toggle-slot";
+          right.insertBefore(s, right.firstChild);
+        }
+        setSlot(s);
+        return;
+      }
+      if (tries++ < 60) timer = setTimeout(mount, 500);
+    };
+    mount();
+    // SDK may re-render the header on route changes; re-check periodically.
+    const watch = setInterval(() => {
+      const s = document.querySelector<HTMLElement>(".tt-paper-toggle-slot");
+      if (!s || !s.isConnected) {
+        tries = 0;
+        mount();
+      }
+    }, 2000);
+    return () => {
+      dead = true;
+      if (timer) clearTimeout(timer);
+      clearInterval(watch);
+    };
+  }, [available]);
+
   if (!available) return null;
-  return (
+  const btn = (
     <button
-      className={`tt-paper-toggle${enabled ? " on" : ""}`}
+      className={`tt-paper-toggle${enabled ? " on" : ""}${slot ? " inline" : ""}`}
       onClick={() => setEnabled(!enabled)}
       title="Toggle paper trading mode (simulated 10,000 USDC, live prices, no real orders)"
     >
       PAPER MODE {enabled ? "ON" : "OFF"}
     </button>
   );
+  // Fallback: fixed position until (or unless) the header slot exists.
+  return slot ? createPortal(btn, slot) : btn;
 }
 
 export function PaperBanner() {

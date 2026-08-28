@@ -18,6 +18,21 @@
   padding: 8px 14px;
   cursor: pointer;
 }
+/* In-header variant: a real flex child in the navbar's right cluster. */
+.tt-paper-toggle.inline {
+  position: static;
+  font-size: 12px;
+  border-width: 2px;
+  box-shadow: 2px 2px 0 #000;
+  padding: 5px 10px;
+  margin-right: 8px;
+  white-space: nowrap;
+  align-self: center;
+}
+.tt-paper-toggle-slot {
+  display: inline-flex;
+  align-items: center;
+}
 .tt-paper-toggle.on {
   background: var(--tt-orange);
   color: #000;
@@ -518,14 +533,15 @@
     opacity: 0.15;
     filter: grayscale(1);
   }
-  /* Keep the toggle inside the banner strip when the banner is up. */
-  body.tt-paper-on .tt-paper-toggle {
+  /* Keep the toggle inside the banner strip when the banner is up (legacy
+     fixed fallback only; the inline header toggle needs no repositioning). */
+  body.tt-paper-on .tt-paper-toggle:not(.inline) {
     top: 3px;
     right: 12px;
   }
   .tt-paper-banner {
-    padding-right: 210px;
-    padding-left: 210px;
+    padding-right: 20px;
+    padding-left: 20px;
   }
 }
 
@@ -702,10 +718,15 @@
 }
 
 @media (max-width: 768px) {
-  .tt-paper-toggle {
+  .tt-paper-toggle:not(.inline) {
     top: auto;
     bottom: 72px;
     right: 10px;
+  }
+  .tt-paper-toggle.inline {
+    font-size: 10.5px;
+    padding: 4px 7px;
+    margin-right: 4px;
   }
   .tt-paper-panel {
     top: auto;
@@ -722,7 +743,7 @@
 /* Small phones (<=430px): lift the floating toggle above the bottom nav and
    shrink it so it doesn't crowd the nav at 390px width. */
 @media (max-width: 430px) {
-  .tt-paper-toggle {
+  .tt-paper-toggle:not(.inline) {
     bottom: 96px;
     right: 8px;
     font-size: 12px;
