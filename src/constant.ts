@@ -13,6 +13,7 @@ export enum PathEnum {
 
   Markets = "/markets",
   Leaderboard = "/leaderboard",
+  Competition = "/competition",
 
   Rewards = "/rewards",
   RewardsTrading = "/rewards/trading",
@@ -30,6 +31,7 @@ export const PageTitleMap = {
   [PathEnum.History]: "History",
   [PathEnum.Markets]: "Markets",
   [PathEnum.Leaderboard]: "Leaderboard",
+  [PathEnum.Competition]: "Competition",
   [PathEnum.RewardsTrading]: "Trading Rewards",
   [PathEnum.RewardsAffiliate]: "Affiliate program",
 };

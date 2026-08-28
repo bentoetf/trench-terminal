@@ -101,6 +101,7 @@ export const useOrderlyConfig = () => {
               name: t("tradingLeaderboard.leaderboard"),
               href: PathEnum.Leaderboard,
             },
+            { name: "Competition", href: PathEnum.Competition },
             {
               name: t("tradingRewards.rewards"),
               href: PathEnum.Rewards,
@@ -147,6 +148,12 @@ export const useOrderlyConfig = () => {
             {
               name: t("tradingLeaderboard.leaderboard"),
               href: PathEnum.Leaderboard,
+              activeIcon: <LeaderboardActiveIcon />,
+              inactiveIcon: <LeaderboardInactiveIcon />,
+            },
+            {
+              name: "Comp",
+              href: PathEnum.Competition,
               activeIcon: <LeaderboardActiveIcon />,
               inactiveIcon: <LeaderboardInactiveIcon />,
             },
