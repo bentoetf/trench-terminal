@@ -364,8 +364,15 @@ table thead svg text, footer svg text, [data-state="active"] svg text { fill: #f
 /* sidebar menu: stop mid-word wrapping (oui-break-all) */
 .oui-break-all { word-break: normal !important; overflow-wrap: normal !important; white-space: nowrap !important; }
 
-/* fixed bottom status bar: keep content clear of it */
+/* fixed bottom status bar (desktop footer is position:fixed, 32px tall):
+   reserve its height in the scroll containers instead of letting it overlay content */
 main { padding-bottom: 44px !important; }
+.oui-scaffold-root {
+  padding-bottom: 40px;
+}
+.oui-scaffold-root .oui-scaffold-root {
+  padding-bottom: 0;
+}
 
 /* header: keep brand compact so nav does not clip */
 .tt-brand { gap: 10px; }
@@ -378,4 +385,76 @@ main { padding-bottom: 44px !important; }
 /* leaderboard trophy imagery: flatten */
 img[src*="trophy"], img[src*="medal"], img[src*="rank"] {
   filter: grayscale(1) contrast(1.6);
+}
+
+/* ============================================================
+   Structural bug fixes (theme independent), 2026-08-28
+   ============================================================ */
+
+/* Leaderboard desktop: the generic panel rule above sets margin-right on
+   oui-bg-base-9 cards, which breaks the SDK's mx-auto centering. Restore it. */
+.oui-trading-leaderboard-general-leaderboard {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Portfolio overview shortcut icons (Deposit/Withdraw/History): SDK paints
+   white icons on an oui-bg-base-9 tile, which this theme recolors to cream,
+   making them invisible. Keep those icon tiles black so white glyphs read. */
+div[class*="oui-size-[48px]"].oui-bg-base-9,
+div[class*="oui-size-[48px]"][class*="oui-bg-base"] {
+  background: var(--tt-black) !important;
+}
+
+/* Portfolio history sub-tabs (DEPOSITS/WITHDRAWALS/.../VAULTS) clip at the
+   right edge: let tab rows wrap instead of overflowing. */
+[role="tablist"] {
+  flex-wrap: wrap;
+}
+
+/* Mobile fixes */
+@media (max-width: 768px) {
+  /* Trading page: SDK renders orderbook + order entry in a 4fr/6fr grid that
+     overflows a 390px viewport; stack them instead. */
+  [class*="oui-grid-cols-[4fr,6fr]"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fixed bottom nav (68px + safe area) overlays scrollable content:
+     reserve its height so last rows stay reachable. */
+  .oui-scaffold-root {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+  .oui-scaffold-root .oui-scaffold-root,
+  .oui-scaffold-root main {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Header: shrink and truncate the page title so it cannot collide with the
+     icon cluster and CONNECT button. */
+  header.oui-scaffold-topNavbar span.oui-text-2xl,
+  [class*="oui-scaffold-topNavbar"] span.oui-text-2xl {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    max-width: 38vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  /* Markets page: giant display-font tab titles overlap at 390px; size them
+     down so MARKETS/FUNDING fit side by side. */
+  button[data-testid="oui-testid-markets-tab"],
+  button[data-testid="oui-testid-funding-tab"] {
+    font-size: 18px !important;
+  }
+
+  /* Radix tooltips (e.g. "Link to Desktop via QR Code") get stuck open on
+     touch/mobile and ghost over the page header; hide tooltip content only
+     (dropdowns/popovers use data-state="open" and are unaffected). */
+  [data-radix-popper-content-wrapper] [data-state="instant-open"],
+  [data-radix-popper-content-wrapper] [data-state="delayed-open"] {
+    display: none !important;
+  }
 }
