@@ -713,7 +713,9 @@
     right: 8px;
     left: 8px;
     width: auto;
-    max-height: 60vh;
+    max-height: 56vh;
+    overflow-y: auto;
+    padding-bottom: 18px;
   }
 }
 
