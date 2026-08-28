@@ -8,6 +8,7 @@ import { API } from "@orderly.network/types";
 import { PathEnum } from "@/constant";
 import { useOrderlyConfig } from "@/hooks/useOrderlyConfig";
 import { updateSymbol } from "@/storage";
+import { PaperPanel } from "@/components/paper/PaperPanel";
 
 export type PerpViewProps = Pick<TradingPageProps, "symbol">;
 
@@ -31,11 +32,14 @@ export default function PerpView(props: PerpViewProps) {
   );
 
   return (
-    <TradingPage
-      symbol={symbol}
-      onSymbolChange={onSymbolChange}
-      tradingViewConfig={config.tradingPage.tradingViewConfig}
-      sharePnLConfig={config.tradingPage.sharePnLConfig}
-    />
+    <>
+      <TradingPage
+        symbol={symbol}
+        onSymbolChange={onSymbolChange}
+        tradingViewConfig={config.tradingPage.tradingViewConfig}
+        sharePnLConfig={config.tradingPage.sharePnLConfig}
+      />
+      <PaperPanel symbol={symbol} />
+    </>
   );
 }

@@ -15,6 +15,8 @@ import { APP_CONFIG } from "@/config/app";
 import { useNav } from "@/hooks/useNav";
 import { useOrderlyConfig } from "@/hooks/useOrderlyConfig";
 import { usePathWithoutLang } from "@/hooks/usePathWithoutLang";
+import { PaperModeProvider } from "@/components/paper/paperMode";
+import { PaperChrome } from "@/components/paper/PaperChrome";
 
 const OrderlyProvider: FC<{ children: ReactNode }> = (props) => {
   const config = useOrderlyConfig();
@@ -55,7 +57,10 @@ const OrderlyProvider: FC<{ children: ReactNode }> = (props) => {
           appIcons={config.orderlyAppProvider.appIcons}
           onRouteChange={onRouteChange}
         >
-          {props.children}
+          <PaperModeProvider>
+            <PaperChrome />
+            {props.children}
+          </PaperModeProvider>
         </OrderlyAppProvider>
       </WalletConnectorProvider>
     </LocaleProvider>
