@@ -60,8 +60,6 @@ Verified 2026-08-27: `npm run build` passes; screenshots in `screenshots/`
 
 Known styling gaps:
 
-- TradingView chart is the unlicensed placeholder, so candle colors
-  (#111/#FF3D0A) are unverified; needs a TV license + customCssUrl pass.
 - Leaderboard container sits slightly right of center (SDK layout, not
   restyled); trophy images are grayscale-flattened, not replaced with flat
   brutalist badges.
@@ -76,6 +74,37 @@ Known styling gaps:
 - `src/styles/theme.css`: superseded by the THEME section above; edit the
   `--oui-*` triplets there to re-skin.
 - Page title/description set to Trench Terminal in `src/app/layout.tsx`.
+
+## Chart: lightweight-charts swap (2026-08-27)
+
+The TradingView advanced charting library needs a license, so the SDK's
+chart panel showed a placeholder. Replaced with open-source
+`lightweight-charts` (v5) until the license comes through:
+
+- `src/components/lightweightChart/LightweightChart.tsx`: candlestick +
+  volume chart. Data from Orderly's public TV UDF endpoint (no auth):
+  `GET https://testnet-api.orderly.org/v1/tv/history?symbol=...&resolution=...&from=...&to=...`,
+  polled every 5s (Orderly's public WS was not reachable from a quick test,
+  polling wins). Timeframes 1m/5m/15m/1h/4h/1d; 4h is aggregated
+  client-side from 1h because testnet returns no_data for resolution 240.
+  Themed per THEME-SPEC: cream #F4EFE5 bg, #111 bull, #FF3D0A bear,
+  #CFC8BC grid, black axis text, IBM Plex Mono. Reacts to the selected
+  symbol via the prop the SDK already passes.
+- `src/components/lightweightChart/orderlyTradingviewShim.tsx`: drop-in
+  module exporting `TradingviewWidget`/`TradingviewUI`/`useTradingviewScript`.
+- `next.config.ts`: webpack + turbopack alias maps
+  `@orderly.network/ui-tradingview` to the shim, so the SDK's TradingPage
+  renders our chart with zero SDK patching.
+
+### Revert to TradingView advanced (when licensed)
+
+1. Delete the alias entries in `next.config.ts` (webpack fn + turbopack
+   resolveAlias).
+2. Put the charting_library files under `public/tradingview/` and
+   uncomment `TRADING_VIEW_CONFIG` (scriptSRC, library_path, customCssUrl)
+   in `src/hooks/useOrderlyConfig.tsx`.
+3. Optionally delete `src/components/lightweightChart/` and
+   `lightweight-charts` from package.json.
 
 ## Routes
 
