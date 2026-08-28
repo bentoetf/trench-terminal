@@ -385,19 +385,53 @@ export function PaperPositionsDock() {
   );
 }
 
+// Live mark price straight from Orderly's public endpoint so the paper
+// ticket can do qty<->total linking and est. liq math without SDK hooks.
+function useMark(symbol: string, enabled: boolean) {
+  const [mark, setMark] = useState(0);
+  useEffect(() => {
+    if (!enabled) return;
+    let dead = false;
+    const pull = async () => {
+      try {
+        const r = await fetch(`https://api.orderly.org/v1/public/futures/${symbol}`);
+        const j = await r.json();
+        const p = Number(j?.data?.mark_price);
+        if (!dead && Number.isFinite(p) && p > 0) setMark(p);
+      } catch {}
+    };
+    void pull();
+    const t = setInterval(() => void pull(), 5000);
+    return () => {
+      dead = true;
+      clearInterval(t);
+    };
+  }, [symbol, enabled]);
+  return mark;
+}
+
+const TAKER_PCT = 0.05; // matches backend TAKER_FEE_BPS = 5
+const MAKER_PCT = 0.05;
+const MMR = 0.005; // backend MAINT_MARGIN_RATE
+
 export function PaperPanel({ symbol }: { symbol: string }) {
   const { enabled, wallet } = usePaperMode();
   const [account, setAccount] = useState<PaperAccountView | null>(null);
   const [offline, setOffline] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [side, setSide] = useState<"BUY" | "SELL">("BUY");
-  const [type, setType] = useState<"MARKET" | "LIMIT">("MARKET");
+  const [type, setType] = useState<"MARKET" | "LIMIT">("LIMIT");
   const [qty, setQty] = useState("");
+  const [total, setTotal] = useState("");
   const [price, setPrice] = useState("");
+  const [pct, setPct] = useState(0);
   const [leverage, setLeverage] = useState(10);
+  const [levOpen, setLevOpen] = useState(false);
+  const [orderConfirm, setOrderConfirm] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mark = useMark(symbol, enabled);
 
   const refresh = useCallback(async () => {
     if (!wallet) return;
@@ -459,6 +493,8 @@ export function PaperPanel({ symbol }: { symbol: string }) {
           : "LIMIT ORDER PLACED",
       );
       setQty("");
+      setTotal("");
+      setPct(0);
     } catch (e) {
       setMsg(String((e as Error).message).toUpperCase());
     } finally {
@@ -505,6 +541,48 @@ export function PaperPanel({ symbol }: { symbol: string }) {
   };
 
   const pair = symbol.replace("PERP_", "").replace("_USDC", "/USDC");
+  const base = pair.split("/")[0];
+
+  // Effective price for calcs: limit price if set in LIMIT mode, else mark.
+  const calcPrice = type === "LIMIT" && Number(price) > 0 ? Number(price) : mark;
+
+  const linkQty = (v: string) => {
+    setQty(v);
+    const q = Number(v);
+    setTotal(q > 0 && calcPrice > 0 ? (q * calcPrice).toFixed(2) : "");
+    setPct(0);
+  };
+  const linkTotal = (v: string) => {
+    setTotal(v);
+    const t = Number(v);
+    setQty(t > 0 && calcPrice > 0 ? (t / calcPrice).toFixed(4) : "");
+    setPct(0);
+  };
+
+  const free = account?.balance ?? 0;
+  // Max qty: free collateral * leverage / price, with a fee haircut.
+  const maxQty =
+    calcPrice > 0 ? Math.max(0, (free * leverage) / calcPrice / (1 + (TAKER_PCT / 100) * leverage)) : 0;
+
+  const applyPct = (p: number) => {
+    setPct(p);
+    if (maxQty <= 0) return;
+    const q = (maxQty * p) / 100;
+    setQty(q > 0 ? q.toFixed(4) : "");
+    setTotal(q > 0 && calcPrice > 0 ? (q * calcPrice).toFixed(2) : "");
+  };
+
+  const qn = Number(qty) || 0;
+  const estMargin = calcPrice > 0 && qn > 0 ? (qn * calcPrice) / leverage : 0;
+  const estFee = calcPrice > 0 && qn > 0 ? qn * calcPrice * (TAKER_PCT / 100) : 0;
+  const d = 1 / leverage - MMR;
+  const entryEst = calcPrice;
+  const estLiq =
+    qn > 0 && entryEst > 0
+      ? side === "BUY"
+        ? entryEst * (1 - d)
+        : entryEst * (1 + d)
+      : 0;
 
   if (collapsed) {
     return (
@@ -548,60 +626,210 @@ export function PaperPanel({ symbol }: { symbol: string }) {
         </div>
       </div>
 
-      <div className="tt-paper-tabs">
-        {(["MARKET", "LIMIT"] as const).map((t) => (
-          <button key={t} className={type === t ? "active" : ""} onClick={() => setType(t)}>
-            {t}
-          </button>
-        ))}
+      {/* BUY / SELL tabs, mirrors the live Orderly ticket */}
+      <div className="tt-ticket-sides">
+        <button
+          className={`buy${side === "BUY" ? " active" : ""}`}
+          onClick={() => setSide("BUY")}
+        >
+          BUY
+        </button>
+        <button
+          className={`sell${side === "SELL" ? " active" : ""}`}
+          onClick={() => setSide("SELL")}
+        >
+          SELL
+        </button>
       </div>
 
-      <div className="tt-paper-sides">
-        <button className={`long${side === "BUY" ? " active" : ""}`} onClick={() => setSide("BUY")}>
-          LONG
-        </button>
-        <button className={`short${side === "SELL" ? " active" : ""}`} onClick={() => setSide("SELL")}>
-          SHORT
+      {/* Order type + leverage row */}
+      <div className="tt-ticket-typerow">
+        <select
+          className="tt-ticket-type"
+          value={type}
+          onChange={(e) => setType(e.target.value as "MARKET" | "LIMIT")}
+        >
+          <option value="LIMIT">Limit</option>
+          <option value="MARKET">Market</option>
+          <option disabled>Stop limit</option>
+          <option disabled>Stop market</option>
+        </select>
+        <button className="tt-ticket-lev" onClick={() => setLevOpen(!levOpen)}>
+          Isolated {leverage}X
         </button>
       </div>
-
-      <label className="tt-paper-label">SIZE ({pair.split("/")[0]})</label>
-      <input
-        className="tt-paper-input"
-        inputMode="decimal"
-        placeholder="0.00"
-        value={qty}
-        onChange={(e) => setQty(e.target.value)}
-      />
-      {type === "LIMIT" && (
-        <>
-          <label className="tt-paper-label">LIMIT PRICE (USDC)</label>
+      {levOpen && (
+        <div className="tt-ticket-levpop">
+          <label className="tt-paper-label">LEVERAGE: {leverage}X</label>
           <input
-            className="tt-paper-input"
+            type="range"
+            min={1}
+            max={50}
+            value={leverage}
+            onChange={(e) => setLeverage(Number(e.target.value))}
+            className="tt-paper-slider"
+          />
+        </div>
+      )}
+
+      {/* Available row */}
+      <div className="tt-ticket-avail">
+        <span>Available</span>
+        <span>
+          <b>{account ? fmt(account.balance) : "0"}</b> USDC
+        </span>
+      </div>
+
+      {/* Price input (LIMIT only active; MARKET shows mark, disabled) */}
+      <div className={`tt-ticket-input${type === "MARKET" ? " disabled" : ""}`}>
+        <div className="lab">
+          <span>Price</span>
+          <span>USDC</span>
+        </div>
+        <div className="valrow">
+          <input
             inputMode="decimal"
-            placeholder="0.00"
-            value={price}
+            placeholder="0"
+            disabled={type === "MARKET"}
+            value={type === "MARKET" ? (mark > 0 ? fmt(mark) : "Market") : price}
             onChange={(e) => setPrice(e.target.value)}
           />
-        </>
-      )}
-      <label className="tt-paper-label">LEVERAGE: {leverage}X</label>
+          {type === "LIMIT" && (
+            <span className="chips">
+              <button className="bbo off" disabled title="BBO not available in paper mode">
+                BBO
+              </button>
+              {mark > 0 && (
+                <button className="mid" onClick={() => setPrice(String(mark))}>
+                  Mid
+                </button>
+              )}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Qty + Total, linked */}
+      <div className="tt-ticket-qtyrow">
+        <div className="tt-ticket-input half">
+          <div className="lab">
+            <span>Qty</span>
+            <span>{base}</span>
+          </div>
+          <div className="valrow">
+            <input
+              inputMode="decimal"
+              placeholder="0"
+              value={qty}
+              onChange={(e) => linkQty(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="tt-ticket-input half">
+          <div className="lab">
+            <span>Order size</span>
+            <span>USDC</span>
+          </div>
+          <div className="valrow">
+            <input
+              inputMode="decimal"
+              placeholder="0"
+              value={total}
+              onChange={(e) => linkTotal(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Percentage slider vs free collateral */}
       <input
         type="range"
-        min={1}
-        max={50}
-        value={leverage}
-        onChange={(e) => setLeverage(Number(e.target.value))}
-        className="tt-paper-slider"
+        min={0}
+        max={100}
+        step={1}
+        value={pct}
+        onChange={(e) => applyPct(Number(e.target.value))}
+        className="tt-ticket-pct"
+        list="tt-pct-ticks"
       />
+      <datalist id="tt-pct-ticks">
+        <option value="0" />
+        <option value="25" />
+        <option value="50" />
+        <option value="75" />
+        <option value="100" />
+      </datalist>
+      <div className="tt-ticket-pctrow">
+        <span>{pct}%</span>
+        <span>
+          Max {side === "BUY" ? "buy" : "sell"} {maxQty > 0 ? fmt(maxQty, 4) : "0"}
+        </span>
+      </div>
 
       <button
         className={`tt-paper-submit ${side === "BUY" ? "long" : "short"}`}
         disabled={busy}
-        onClick={submit}
+        onClick={() => {
+          if (orderConfirm && qn > 0) {
+            if (!window.confirm(`${side} ${qty} ${base} (${type}) at ${type === "LIMIT" ? price : "market"}?`)) return;
+          }
+          void submit();
+        }}
       >
-        {side === "BUY" ? "LONG" : "SHORT"} {pair.split("/")[0]} ({type})
+        {side === "BUY" ? "BUY / LONG" : "SELL / SHORT"}
       </button>
+
+      {/* Info rows, same as live ticket */}
+      <div className="tt-ticket-info">
+        <span>Est. margin</span>
+        <span>{estMargin > 0 ? `${fmt(estMargin)} USDC` : "-- USDC"}</span>
+      </div>
+      <div className="tt-ticket-info">
+        <span>Est. liq. price</span>
+        <span>{estLiq > 0 ? `${fmt(estLiq)} USDC` : "-- USDC"}</span>
+      </div>
+      <div className="tt-ticket-info">
+        <span>Fees</span>
+        <span>
+          Taker: {TAKER_PCT}% / Maker: {MAKER_PCT}%{estFee > 0 ? ` (${fmt(estFee, 4)})` : ""}
+        </span>
+      </div>
+
+      <div className="tt-ticket-divider" />
+
+      {/* TP/SL + Reduce only rows, greyed (not yet in paper engine) */}
+      <div className="tt-ticket-toggle off" title="TP/SL coming soon to paper mode">
+        <span className="sw" />
+        <span>TP/SL</span>
+      </div>
+      <div className="tt-ticket-toggle off" title="Reduce only coming soon to paper mode">
+        <span className="sw" />
+        <span>Reduce only</span>
+      </div>
+
+      {/* Advanced options box; unsupported ones greyed out like live */}
+      <div className="tt-ticket-opts">
+        <label className="off" title="Not available in paper mode yet">
+          <input type="checkbox" disabled /> Post only
+        </label>
+        <label className="off" title="Not available in paper mode yet">
+          <input type="checkbox" disabled /> IOC
+        </label>
+        <label className="off" title="Not available in paper mode yet">
+          <input type="checkbox" disabled /> FOK
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={orderConfirm}
+            onChange={(e) => setOrderConfirm(e.target.checked)}
+          />{" "}
+          Order confirm
+        </label>
+        <label className="off" title="Not available in paper mode yet">
+          <input type="checkbox" disabled /> Hidden
+        </label>
+      </div>
 
       {msg && <div className="tt-paper-msg">{msg}</div>}
 

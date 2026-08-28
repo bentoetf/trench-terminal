@@ -181,11 +181,11 @@
   width: 100%;
   margin-top: 10px;
   font-family: var(--tt-display);
-  font-size: 22px;
-  letter-spacing: -0.03em;
-  padding: 12px 0;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  padding: 10px 0;
   border: 3px solid #000;
-  box-shadow: 5px 5px 0 #000;
+  box-shadow: 4px 4px 0 #000;
   cursor: pointer;
   color: #000;
 }
@@ -201,6 +201,247 @@
 .tt-paper-submit:active {
   transform: translate(3px, 3px);
   box-shadow: 2px 2px 0 #000;
+}
+
+/* ---- Live-ticket parity styles (mirrors the Orderly order entry) ---- */
+.tt-ticket-sides {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tt-ticket-sides button {
+  flex: 1;
+  font-family: var(--tt-cond);
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 8px 0;
+  background: var(--tt-row);
+  border: none;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.tt-ticket-sides .buy.active {
+  background: var(--tt-green-long);
+  color: #000;
+}
+.tt-ticket-sides .sell.active {
+  background: var(--tt-orange);
+  color: #000;
+}
+
+.tt-ticket-typerow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tt-ticket-type {
+  flex: 1;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 7px 8px;
+  background: var(--tt-panel);
+  border: 2px solid #000;
+  cursor: pointer;
+}
+.tt-ticket-lev {
+  flex: 1;
+  font-family: var(--tt-cond);
+  font-weight: 800;
+  font-size: 13px;
+  background: var(--tt-row);
+  border: none;
+  cursor: pointer;
+  color: #1a1a1a;
+}
+.tt-ticket-levpop {
+  border: 2px solid #000;
+  background: var(--tt-row);
+  padding: 6px 8px;
+  margin-bottom: 10px;
+}
+
+.tt-ticket-avail {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.tt-ticket-avail b {
+  font-family: var(--tt-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tt-ticket-input {
+  border: 2px solid #000;
+  background: var(--tt-panel);
+  padding: 6px 9px 7px;
+  margin-bottom: 5px;
+}
+.tt-ticket-input.disabled {
+  opacity: 0.6;
+}
+.tt-ticket-input .lab {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 12.5px;
+  margin-bottom: 2px;
+}
+.tt-ticket-input .valrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tt-ticket-input input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--tt-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  outline: none;
+  padding: 0;
+}
+.tt-ticket-input .mid {
+  font-family: var(--tt-cond);
+  font-weight: 800;
+  font-size: 12.5px;
+  color: var(--tt-orange);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.tt-ticket-input .chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tt-ticket-input .bbo {
+  font-family: var(--tt-cond);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 2px 8px;
+  background: var(--tt-panel);
+  border: 1px solid var(--tt-grid);
+  color: #1a1a1a;
+}
+.tt-ticket-input .bbo.off {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tt-ticket-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 5px 0;
+}
+.tt-ticket-toggle .sw {
+  width: 26px;
+  height: 13px;
+  border: 2px solid #000;
+  background: var(--tt-panel);
+  position: relative;
+  display: inline-block;
+}
+.tt-ticket-toggle .sw::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 100%;
+  background: #000;
+}
+.tt-ticket-toggle.off {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tt-ticket-qtyrow {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+.tt-ticket-qtyrow .half {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.tt-ticket-pct {
+  width: 100%;
+  accent-color: #000;
+  height: 14px;
+  margin: 2px 0 0;
+}
+.tt-ticket-pctrow {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 13px;
+  margin: 2px 0 12px;
+}
+
+.tt-ticket-info {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--tt-grid);
+}
+.tt-ticket-info span:last-child {
+  font-family: var(--tt-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.tt-ticket-divider {
+  height: 1px;
+  background: var(--tt-grid);
+  margin: 10px 0;
+}
+
+.tt-ticket-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  background: var(--tt-row);
+  padding: 9px 10px;
+  margin-bottom: 4px;
+}
+.tt-ticket-opts label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--tt-cond);
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.tt-ticket-opts label.off {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.tt-ticket-opts input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  accent-color: #000;
 }
 
 .tt-paper-msg {
