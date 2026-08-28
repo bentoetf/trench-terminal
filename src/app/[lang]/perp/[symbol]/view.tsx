@@ -8,7 +8,7 @@ import { API } from "@orderly.network/types";
 import { PathEnum } from "@/constant";
 import { useOrderlyConfig } from "@/hooks/useOrderlyConfig";
 import { updateSymbol } from "@/storage";
-import { PaperPanel } from "@/components/paper/PaperPanel";
+import { PaperPanel, PaperPositionsDock } from "@/components/paper/PaperPanel";
 
 export type PerpViewProps = Pick<TradingPageProps, "symbol">;
 
@@ -40,6 +40,7 @@ export default function PerpView(props: PerpViewProps) {
         sharePnLConfig={config.tradingPage.sharePnLConfig}
       />
       <PaperPanel symbol={symbol} />
+      <PaperPositionsDock />
     </>
   );
 }

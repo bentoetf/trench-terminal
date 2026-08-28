@@ -5,11 +5,15 @@
 // Talks only to our backend; never touches Orderly order flow.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   paperApi,
   usePaperMode,
   type PaperAccountView,
 } from "./paperMode";
+
+const PAPER_EVT = "tt-paper-updated";
+const emitPaperUpdate = () => window.dispatchEvent(new Event(PAPER_EVT));
 
 const fmt = (n: number, d = 2) =>
   n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -38,10 +42,132 @@ export function PaperBanner() {
   );
 }
 
+// Overlays the SDK bottom positions pane with paper positions while paper
+// mode is on. The SDK widget knows nothing about paper trades, so we cover
+// it instead of leaving it empty and confusing.
+export function PaperPositionsDock() {
+  const { enabled, wallet } = usePaperMode();
+  const [account, setAccount] = useState<PaperAccountView | null>(null);
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const refresh = useCallback(async () => {
+    if (!wallet) return;
+    try {
+      const a = await paperApi.account(wallet);
+      if (a) setAccount(a);
+    } catch {}
+  }, [wallet]);
+
+  useEffect(() => {
+    if (!enabled || !wallet) return;
+    void refresh();
+    const t = setInterval(() => void refresh(), 5000);
+    const onEvt = () => void refresh();
+    window.addEventListener(PAPER_EVT, onEvt);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener(PAPER_EVT, onEvt);
+    };
+  }, [enabled, wallet, refresh]);
+
+  // Locate the SDK bottom pane (desktop vertical split, last pane). Retry
+  // briefly because the SDK renders async.
+  useEffect(() => {
+    if (!enabled) {
+      setHost(null);
+      return;
+    }
+    let tries = 0;
+    const find = () => {
+      if (window.innerWidth <= 768) return; // desktop-only dock
+      const el = document.querySelector<HTMLElement>(
+        ".w-split-vertical > .w-split-pane:last-of-type",
+      );
+      if (el) {
+        if (getComputedStyle(el).position === "static") el.style.position = "relative";
+        setHost(el);
+        return;
+      }
+      if (tries++ < 40) setTimeout(find, 500);
+    };
+    find();
+  }, [enabled]);
+
+  if (!enabled || !host) return null;
+
+  const close = async (sym: string) => {
+    setBusy(true);
+    try {
+      const r = await paperApi.closePosition(wallet, sym);
+      setAccount(r.account);
+      emitPaperUpdate();
+    } catch {} finally {
+      setBusy(false);
+    }
+  };
+
+  const positions = account?.positions ?? [];
+
+  return createPortal(
+    <div className="tt-paper-dock">
+      <div className="tt-paper-dock-head">
+        <span>PAPER POSITIONS</span>
+        <span className="bal">
+          BAL ${account ? fmt(account.balance) : "…"} · EQUITY ${account ? fmt(account.equity) : "…"} ·{" "}
+          <span className={account && account.unrealizedPnl < 0 ? "neg" : "pos"}>
+            UPNL {account && account.unrealizedPnl >= 0 ? "+" : ""}
+            {account ? fmt(account.unrealizedPnl) : "…"}
+          </span>
+        </span>
+      </div>
+      {positions.length === 0 ? (
+        <div className="tt-paper-dock-empty">NO OPEN PAPER POSITIONS.</div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>MARKET</th>
+              <th>SIDE</th>
+              <th>QTY</th>
+              <th>ENTRY</th>
+              <th>MARK</th>
+              <th>LIQ</th>
+              <th>NOTIONAL</th>
+              <th>UPNL</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {positions.map((p) => (
+              <tr key={p.symbol}>
+                <td><b>{p.symbol.replace("PERP_", "").replace("_USDC", "")}</b></td>
+                <td className={p.qty > 0 ? "pos" : "neg"}>{p.qty > 0 ? "LONG" : "SHORT"} {p.leverage}X</td>
+                <td>{fmt(Math.abs(p.qty), 4)}</td>
+                <td>{fmt(p.entryPrice)}</td>
+                <td>{fmt(p.markPrice)}</td>
+                <td>{fmt(p.liqPrice)}</td>
+                <td>{fmt(p.notional)}</td>
+                <td className={p.unrealizedPnl >= 0 ? "pos" : "neg"}>
+                  {p.unrealizedPnl >= 0 ? "+" : ""}
+                  {fmt(p.unrealizedPnl)}
+                </td>
+                <td><button onClick={() => close(p.symbol)} disabled={busy}>CLOSE</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>,
+    host,
+  );
+}
+
 export function PaperPanel({ symbol }: { symbol: string }) {
   const { enabled, wallet } = usePaperMode();
   const [account, setAccount] = useState<PaperAccountView | null>(null);
   const [offline, setOffline] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [side, setSide] = useState<"BUY" | "SELL">("BUY");
   const [type, setType] = useState<"MARKET" | "LIMIT">("MARKET");
   const [qty, setQty] = useState("");
@@ -61,6 +187,11 @@ export function PaperPanel({ symbol }: { symbol: string }) {
       setOffline(true);
     }
   }, [wallet]);
+
+  useEffect(() => {
+    // Small screens: start collapsed so the sheet doesn't bury the chart.
+    if (typeof window !== "undefined" && window.innerWidth <= 768) setCollapsed(true);
+  }, []);
 
   useEffect(() => {
     if (!enabled || !wallet) return;
@@ -99,6 +230,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
         leverage,
       });
       setAccount(r.account);
+      emitPaperUpdate();
       setMsg(
         r.order.status === "FILLED"
           ? `FILLED @ ${fmt(Number((r.order as any).filledPrice ?? 0))}`
@@ -117,6 +249,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
     try {
       const r = await paperApi.closePosition(wallet, sym);
       setAccount(r.account);
+      emitPaperUpdate();
       setMsg(`CLOSED ${sym.replace("PERP_", "").replace("_USDC", "")} PNL ${fmt(r.fill.realizedPnl)}`);
     } catch (e) {
       setMsg(String((e as Error).message).toUpperCase());
@@ -129,6 +262,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
     try {
       await paperApi.cancelOrder(wallet, id);
       void refresh();
+      emitPaperUpdate();
     } catch {}
   };
 
@@ -139,6 +273,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
     try {
       const a = await paperApi.reset(wallet);
       setAccount(a);
+      emitPaperUpdate();
       setMsg("ACCOUNT RESET TO 10,000 USDC");
     } catch (e) {
       setMsg(String((e as Error).message).toUpperCase());
@@ -149,11 +284,29 @@ export function PaperPanel({ symbol }: { symbol: string }) {
 
   const pair = symbol.replace("PERP_", "").replace("_USDC", "/USDC");
 
+  if (collapsed) {
+    return (
+      <div className="tt-paper-panel collapsed">
+        <div className="tt-paper-head">
+          <span>PAPER TRADING</span>
+          <span className="tt-paper-head-summary">
+            {account ? `$${fmt(account.equity)}` : ""}
+          </span>
+          <button className="tt-paper-collapse" onClick={() => setCollapsed(false)}>
+            OPEN
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="tt-paper-panel">
       <div className="tt-paper-head">
         <span>PAPER TRADING</span>
+        <span style={{ marginLeft: "auto" }} />
         <button className="tt-paper-reset" onClick={reset} disabled={busy}>RESET</button>
+        <button className="tt-paper-collapse" onClick={() => setCollapsed(true)}>HIDE</button>
       </div>
 
       <div className="tt-paper-stats">

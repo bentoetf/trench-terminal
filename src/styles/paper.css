@@ -267,14 +267,120 @@
 .tt-paper-panel .pos { color: var(--tt-green); }
 .tt-paper-panel .neg { color: var(--tt-orange); }
 
-/* While paper mode is on, dim + block the SDK order entry column so the
-   paper panel is unambiguously the active ticket. */
-body.tt-paper-on [class*="oui-trading"] aside,
-body.tt-paper-on .oui-order-entry-form,
-body.tt-paper-on [class*="orderEntry"] {
-  pointer-events: none;
-  opacity: 0.25;
-  filter: grayscale(1);
+/* While paper mode is on, dim + block the SDK order entry column (the
+   right-most split pane on desktop) so the paper panel is unambiguously
+   the active ticket. The old selectors (.oui-order-entry-form etc.) do not
+   exist in this SDK build. */
+@media (min-width: 769px) {
+  body.tt-paper-on .tt-paper-dim {
+    pointer-events: none;
+    opacity: 0.15;
+    filter: grayscale(1);
+  }
+  /* Keep the toggle inside the banner strip when the banner is up. */
+  body.tt-paper-on .tt-paper-toggle {
+    top: 3px;
+    right: 12px;
+  }
+  .tt-paper-banner {
+    padding-right: 210px;
+    padding-left: 210px;
+  }
+}
+
+/* Paper positions dock: portalled into the SDK bottom pane (positions
+   area) while paper mode is on, covering the real (empty) widget. */
+.tt-paper-dock {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow-y: auto;
+  background: var(--tt-panel);
+  border: 3px solid #000;
+  padding: 10px 12px;
+  font-family: var(--tt-cond);
+  color: #000;
+}
+.tt-paper-dock-head {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--tt-display);
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  border-bottom: 3px solid #000;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+.tt-paper-dock-head .bal {
+  font-family: var(--tt-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.tt-paper-dock-empty {
+  font-family: var(--tt-mono);
+  font-size: 13px;
+  padding: 10px 0;
+}
+.tt-paper-dock table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--tt-mono);
+  font-size: 12.5px;
+}
+.tt-paper-dock th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid #000;
+  padding: 3px 8px 3px 0;
+}
+.tt-paper-dock td {
+  padding: 5px 8px 5px 0;
+  border-bottom: 1px solid var(--tt-grid);
+  font-variant-numeric: tabular-nums;
+}
+.tt-paper-dock td button {
+  font-family: var(--tt-display);
+  font-size: 12px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+.tt-paper-dock .pos { color: var(--tt-green); }
+.tt-paper-dock .neg { color: var(--tt-orange); }
+
+/* Collapsed state: just the head bar, so the sheet does not sit over the
+   chart/orderbook until the user opens it. */
+.tt-paper-panel.collapsed {
+  max-height: none;
+  overflow: hidden;
+  padding: 8px 14px;
+}
+.tt-paper-panel.collapsed .tt-paper-head {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.tt-paper-collapse {
+  font-family: var(--tt-display);
+  font-size: 13px;
+  background: var(--tt-panel);
+  color: #000;
+  border: 2px solid #000;
+  padding: 4px 9px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.tt-paper-head-summary {
+  font-family: var(--tt-mono);
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: auto;
+  margin-right: 4px;
 }
 
 @media (max-width: 768px) {
@@ -289,7 +395,7 @@ body.tt-paper-on [class*="orderEntry"] {
     right: 8px;
     left: 8px;
     width: auto;
-    max-height: 55vh;
+    max-height: 60vh;
   }
 }
 

@@ -1,0 +1,420 @@
+{
+  "report": {
+    "present": {
+      ".tt-paper-toggle": true,
+      ".tt-paper-banner": true,
+      ".tt-paper-panel": true
+    },
+    "overlaps": [
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-rounded-xl oui-bg-base-9",
+        "rect": {
+          "x": 4,
+          "y": 601,
+          "w": 372,
+          "h": 483
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-box oui-size-width oui-size-height oui-font-semibold",
+        "rect": {
+          "x": 4,
+          "y": 601,
+          "w": 372,
+          "h": 483
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-box oui-p-2 oui-flex oui-flex-col oui-items-start oui-justify-start oui-flex",
+        "rect": {
+          "x": 4,
+          "y": 601,
+          "w": 372,
+          "h": 483
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-box oui-order-book-list oui-flex oui-w-full oui-flex-col oui-gap-px",
+        "rect": {
+          "x": 12,
+          "y": 699,
+          "w": 356,
+          "h": 144.5
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-box oui-relative oui-w-full oui-cursor-pointer oui-overflow-hidden oui-text-",
+        "rect": {
+          "x": 12,
+          "y": 723.25,
+          "w": 356,
+          "h": 23.25
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.oui-absolute oui-right-[-100%] oui-top-0 oui-h-full oui-w-full oui-transition-tr",
+        "rect": {
+          "x": 76.71697998046875,
+          "y": 723.25,
+          "w": 356,
+          "h": 23.25
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-toggle",
+        "el": "DIV.!top-[62px] md:!top-[80px] oui-font-semibold",
+        "rect": {
+          "x": 16,
+          "y": 16,
+          "w": 358,
+          "h": 812
+        },
+        "paperRect": {
+          "x": 260.59375,
+          "y": 714,
+          "w": 121.40625,
+          "h": 34
+        }
+      },
+      {
+        "paper": ".tt-paper-banner",
+        "el": "DIV.!top-[62px] md:!top-[80px] oui-font-semibold",
+        "rect": {
+          "x": 16,
+          "y": 16,
+          "w": 358,
+          "h": 812
+        },
+        "paperRect": {
+          "x": 0,
+          "y": 0,
+          "w": 390,
+          "h": 71
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.oui-mx-1 oui-rounded-xl oui-bg-base-9",
+        "rect": {
+          "x": 4,
+          "y": 193,
+          "w": 382,
+          "h": 400
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.oui-ring-offset-background focus-visible:oui-outline-none focus-visible:oui-ring",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 354
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.oui-pb-1 oui-flex oui-flex-col oui-gap-1",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 354
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.oui-w-full oui-h-full",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 346
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 346
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 346
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 346
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 239,
+          "w": 372,
+          "h": 61
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 94.203125,
+          "y": 245,
+          "w": 230.03125,
+          "h": 22.5
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "BUTTON.",
+        "rect": {
+          "x": 171.421875,
+          "y": 245,
+          "w": 42.265625,
+          "h": 22.5
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 372,
+          "h": 285
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.tv-lightweight-charts",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 372,
+          "h": 285
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "TABLE.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 372,
+          "h": 284
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "TR.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 372,
+          "h": 256
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "TD.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 306,
+          "h": 256
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "DIV.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 306,
+          "h": 256
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      },
+      {
+        "paper": ".tt-paper-panel",
+        "el": "CANVAS.",
+        "rect": {
+          "x": 4,
+          "y": 300,
+          "w": 306,
+          "h": 256
+        },
+        "paperRect": {
+          "x": 8,
+          "y": 256.5,
+          "w": 374,
+          "h": 455.5
+        }
+      }
+    ],
+    "env": {
+      "panelText": "PAPER TRADING\nRESET\nBALANCE\n$10,000.00\nEQUITY\n$10,000.00\nPNL %\n+0.00%\nMARKET\nLIMIT\nLONG\nSHORT\nSIZE (ETH)\nLEVERAGE: 10X\nLONG ETH (MARKET)"
+    }
+  },
+  "logs": [
+    "[log] --- not connect sol null null",
+    "[warning] Amplitude Logger [Warn]: `options.defaultTracking` is set to undefined. This implicitly configures your Amplitude instance to track Page Views, Sessions, File Downloads, and Form Interactions. You can suppress this warning by explicitly setting a value to `options.defaultTracking`. The value must either be a boolean, to enable and disable all default events, or an object, for advanced configuration. For example:\n\namplitude.init(<YOUR_API_KEY>, {\n  defaultTracking: true,\n});\n\nVisit https://www.docs.developers.amplitude.com/data/sdks/browser-2/#tracking-default-events for more details.",
+    "[log] --- not connect sol null null",
+    "[warning] Amplitude Logger [Warn]: `options.defaultTracking` is set to undefined. This implicitly configures your Amplitude instance to track Page Views, Sessions, File Downloads, and Form Interactions. You can suppress this warning by explicitly setting a value to `options.defaultTracking`. The value must either be a boolean, to enable and disable all default events, or an object, for advanced configuration. For example:\n\namplitude.init(<YOUR_API_KEY>, {\n  defaultTracking: true,\n});\n\nVisit https://www.docs.developers.amplitude.com/data/sdks/browser-2/#tracking-default-events for more details."
+  ]
+}
