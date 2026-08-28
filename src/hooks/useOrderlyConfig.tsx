@@ -40,15 +40,16 @@ export type OrderlyConfig = {
 const APP_ICONS: AppLogos = {
   main: {
     component: (
-      <img
-        alt="Orderly logo"
-        src="/images/orderly-logo.svg"
-        style={{ width: 100, height: 40 }}
-      />
+      <span className="tt-brand">
+        <span className="tt-logo">
+          TRENCH TERMINAL<span className="tt-logo-dot" />
+        </span>
+        <span className="tt-tagline">PERPS. NO KYC. PURE EDGE.</span>
+      </span>
     ),
   },
   secondary: {
-    img: "/images/orderly-logo-secondary.svg",
+    component: <span className="tt-logo" style={{ fontSize: 18 }}>TT</span>,
   },
 };
 
@@ -82,7 +83,7 @@ const SHARE_PNL_CONFIG: TradingPageProps["sharePnLConfig"] = {
   lossColor: "rgba(245, 97, 139, 1)",
   brandColor: "rgba(255, 255, 255, 0.98)",
   refLink: "https://orderly.network",
-  refSlogan: "Orderly referral",
+  refSlogan: "PERPS. NO KYC. PURE EDGE.",
 };
 
 export const useOrderlyConfig = () => {

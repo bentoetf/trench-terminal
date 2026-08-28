@@ -30,14 +30,51 @@ switch network to `mainnet`. Nothing else in the codebase hardcodes the broker.
 
 ## Where the theme lives (skin swap later)
 
-- `src/styles/theme.css`: all colors as `--oui-*` CSS variables (primary, success,
-  danger, base grays, gradients) plus font family. This is the whole skin; edit
-  RGB triplets here to rebrand. Currently the default Orderly purple theme.
-- `src/styles/fonts.css`: font faces.
-- Logos and icons: `public/images/` (orderly-logo.svg etc.) and
-  `src/components/icons/orderly.tsx`. Nav/branding config (logo, links, footer
-  socials, referral slogan) in `src/hooks/useOrderlyConfig.tsx`, still Orderly
-  branded, swap when theming.
+### THEME: Trench Terminal brutalist skin (applied 2026-08-27)
+
+Theme spec: `THEME-SPEC.md` (cream #F3EFE5 canvas, #F6F1E7 panels, 4px black
+borders, 7px 8px 0 #000 hard shadows, radius 0, orange #FF3D0A accent, LONG
+#3FA462, positive #19833B, black #030303 modules, Anton + Barlow Condensed +
+IBM Plex Mono uppercase, tabular-nums).
+
+Files changed for the skin:
+
+- `src/styles/theme.css`: all `--oui-*` variables remapped to the brutalist
+  palette (light-inverted base scale, orange primary/danger, green success,
+  gradients flattened to solid fills, every `--oui-rounded-*` set to 0).
+- `src/styles/brutalist.css` (NEW): the override layer for deep SDK internals.
+  Global radius kill, panel borders + hard shadows on `.oui-box.oui-rounded-*`
+  and `.oui-card-root` and table roots, black table headers, tab/button/input
+  restyles, chart svg text fill fix (was white on cream), sidebar
+  `oui-break-all` wrap fix, fixed-status-bar bottom padding, trophy-image
+  grayscale flatten, `.tt-logo`/`.tt-tagline` branding classes.
+- `src/styles/fonts.css`: Manrope replaced with Google Fonts import of Anton,
+  Barlow Condensed, IBM Plex Mono.
+- `src/app/globals.css`: imports brutalist.css last.
+- `src/hooks/useOrderlyConfig.tsx`: logo swapped to "TRENCH TERMINAL" text
+  brand with orange square dot + "PERPS. NO KYC. PURE EDGE." tagline block;
+  PnL share slogan set to the tagline.
+
+Verified 2026-08-27: `npm run build` passes; screenshots in `screenshots/`
+(trading, portfolio, markets, leaderboard, 1440px).
+
+Known styling gaps:
+
+- TradingView chart is the unlicensed placeholder, so candle colors
+  (#111/#FF3D0A) are unverified; needs a TV license + customCssUrl pass.
+- Leaderboard container sits slightly right of center (SDK layout, not
+  restyled); trophy images are grayscale-flattened, not replaced with flat
+  brutalist badges.
+- Header nav truncates the REWARDS item at ~1440px when wallet totals show;
+  tagline hides below 1180px but the brand block is still wide.
+- Risk-rate meter (top right of trading page) keeps its pastel gradient bar.
+- Some SDK micro-controls (sliders, toggles, checkboxes) keep default styling;
+  bordered but not fully brutalist.
+- Selected markets row does not use the mockup's orange-fill treatment.
+
+
+- `src/styles/theme.css`: superseded by the THEME section above; edit the
+  `--oui-*` triplets there to re-skin.
 - Page title/description set to Trench Terminal in `src/app/layout.tsx`.
 
 ## Routes

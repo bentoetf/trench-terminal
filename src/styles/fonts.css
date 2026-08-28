@@ -1,20 +1,2 @@
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-}
+/* Trench Terminal display + condensed + mono stack (Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap');

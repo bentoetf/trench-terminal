@@ -1,0 +1,381 @@
+/* ============================================================
+   TRENCH TERMINAL, brutalist override layer
+   Cream paper, 4px black borders, hard offset shadows, no radius,
+   Anton display, Barlow Condensed body, IBM Plex Mono numbers.
+   ============================================================ */
+
+:root {
+  --tt-cream: #F3EFE5;
+  --tt-panel: #F6F1E7;
+  --tt-row: #F7F3EA;
+  --tt-row-alt: #F2EEE5;
+  --tt-muted-fill: #E6E0D5;
+  --tt-black: #030303;
+  --tt-orange: #FF3D0A;
+  --tt-green: #19833B;
+  --tt-green-long: #3FA462;
+  --tt-grid: #8C887E;
+  --tt-display: 'Anton', 'Impact', 'Arial Black', sans-serif;
+  --tt-cond: 'Barlow Condensed', 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  --tt-mono: 'IBM Plex Mono', 'Roboto Mono', monospace;
+}
+
+html, body {
+  background: var(--tt-cream) !important;
+  color: #000;
+  font-family: var(--tt-cond);
+}
+
+/* kill every border radius the SDK sneaks in */
+*, *::before, *::after {
+  border-radius: 0 !important;
+}
+
+/* numbers: tabular mono */
+.oui-numeral,
+[class*="oui-font-size"] span,
+input {
+  font-variant-numeric: tabular-nums;
+}
+
+/* mono for numeric/font-mono content */
+.oui-font-mono,
+[class*="orderly-font-mono"] {
+  font-family: var(--tt-mono) !important;
+}
+
+/* ---------- scaffold: top nav ---------- */
+header.oui-scaffold-topNavbar,
+[class*="oui-scaffold-topNavbar"] {
+  background: var(--tt-panel) !important;
+  border-bottom: 4px solid #000 !important;
+}
+
+/* nav menu items: uppercase display */
+header .oui-scaffold-topNavbar a,
+header button,
+nav a, nav button {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+/* main content area */
+.oui-scaffold-root, main {
+  background: var(--tt-cream) !important;
+}
+
+/* ---------- panels / boxes ---------- */
+/* Orderly wraps trading modules in oui-box oui-rounded-2xl oui-bg-base-9 */
+.oui-box.oui-rounded-2xl.oui-bg-base-9,
+.oui-box.oui-rounded-2xl.oui-bg-base-8,
+.oui-card-root {
+  border: 4px solid #000;
+  box-shadow: 7px 8px 0 #000;
+  background: var(--tt-panel) !important;
+  margin-right: 9px;
+  margin-bottom: 10px;
+}
+
+/* leaderboard / portfolio outer cards */
+.oui-box.oui-rounded-xl.oui-bg-base-9,
+[class*="oui-leaderboard"] .oui-table-root {
+  border: 4px solid #000;
+  box-shadow: 7px 8px 0 #000;
+  background: var(--tt-panel) !important;
+}
+
+/* generic dark fills -> cream panel */
+.oui-bg-base-9, .oui-bg-base-8, .oui-bg-base-10 {
+  background-color: var(--tt-panel) !important;
+}
+.oui-bg-base-7, .oui-bg-base-6 {
+  background-color: var(--tt-muted-fill) !important;
+}
+
+/* dividers and table grid lines */
+.oui-divider, hr {
+  border-color: var(--tt-grid) !important;
+}
+table td, table th {
+  border-color: var(--tt-grid) !important;
+}
+table tbody tr {
+  border-bottom: 1px solid var(--tt-grid);
+}
+table thead th {
+  background: var(--tt-black) !important;
+  color: #fff !important;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+table thead th * { color: #fff !important; }
+
+/* kill glossy gradients (leaderboard trophy rows etc.) */
+tbody tr[class*="gradient"],
+tbody tr [class*="gradient"],
+tbody tr td::before,
+[class*="oui-gradient"] {
+  background-image: none !important;
+}
+tbody tr[style*="gradient"] { background: var(--tt-row) !important; }
+
+/* headings: display font */
+h1, h2, h3,
+[class*="oui-text-2xl"], [class*="oui-text-3xl"] {
+  font-family: var(--tt-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- buttons ---------- */
+button.oui-button {
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* primary / accent buttons: orange with black border + hard shadow */
+button.oui-button[data-type="primary"],
+button.oui-button.oui-bg-primary,
+button[class*="oui-bg-primary"] {
+  background: var(--tt-orange) !important;
+  color: #000 !important;
+  border: 3px solid #000 !important;
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* wallet connect button (scaffold renders it with primary gradient) */
+[class*="oui-wallet-connect"] button,
+button[class*="gradient"] {
+  background: var(--tt-orange) !important;
+  color: #000 !important;
+  border: 3px solid #000 !important;
+  box-shadow: 7px 7px 0 #000;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+/* BUY/LONG and SELL/SHORT order buttons */
+button[data-type="buy"], button.oui-bg-success,
+button[class*="oui-bg-success"] {
+  background: var(--tt-green-long) !important;
+  color: #000 !important;
+  border: 3px solid #000 !important;
+  box-shadow: 4px 4px 0 #000;
+}
+button[data-type="sell"], button.oui-bg-danger,
+button[class*="oui-bg-danger"] {
+  background: var(--tt-orange) !important;
+  color: #000 !important;
+  border: 3px solid #000 !important;
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* ---------- tabs ---------- */
+[role="tablist"] {
+  gap: 6px;
+}
+[role="tab"] {
+  text-transform: uppercase;
+  font-weight: 800;
+  border: 1.5px solid var(--tt-grid);
+  background: var(--tt-panel);
+  color: #171717;
+}
+[role="tab"][data-state="active"],
+[role="tab"][aria-selected="true"] {
+  background: var(--tt-black) !important;
+  color: #fff !important;
+  border-color: #000;
+}
+
+/* ---------- inputs ---------- */
+input, .oui-input-root, [class*="oui-input"] {
+  background: var(--tt-panel) !important;
+  color: #000 !important;
+}
+.oui-input-root, [class*="oui-input-root"] {
+  border: 1.5px solid #000 !important;
+}
+input::placeholder { color: #6E6A64; }
+
+/* ---------- text colors ---------- */
+.oui-text-base-contrast, .oui-text-base-contrast-80,
+.oui-text-base-contrast-54, .oui-text-base-contrast-36,
+.oui-text-base-contrast-20, .oui-text-base-contrast-12 {
+  color: #171717 !important;
+}
+.oui-text-base-contrast, .oui-text-base-contrast-80 {
+  color: #000 !important;
+}
+
+/* profit/loss text */
+.oui-text-success, [class*="oui-text-success"] { color: var(--tt-green) !important; }
+.oui-text-danger, [class*="oui-text-danger"] { color: var(--tt-orange) !important; }
+
+/* links */
+a { color: #000; }
+
+/* ---------- footer ---------- */
+footer, [class*="oui-scaffold-footer"] {
+  background: var(--tt-black) !important;
+  color: #fff !important;
+  border-top: 4px solid #000;
+}
+footer * { color: #fff !important; }
+
+/* ---------- scrollbars ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--tt-muted-fill); }
+::-webkit-scrollbar-thumb { background: #000; border: 2px solid var(--tt-muted-fill); }
+
+/* ---------- dialogs / dropdowns / popovers ---------- */
+[role="dialog"], [data-radix-popper-content-wrapper] > div {
+  background: var(--tt-panel) !important;
+  border: 4px solid #000 !important;
+  box-shadow: 7px 8px 0 #000 !important;
+}
+
+/* ---------- charts: fix white-on-cream axis labels ---------- */
+svg text {
+  fill: #171717 !important;
+}
+.oui-bg-base-9 svg text,
+.oui-box svg text {
+  fill: #171717 !important;
+}
+/* recharts / chart grid lines */
+svg line[stroke="#FFFFFF"], svg line[stroke="white"] {
+  stroke: #CFC8BC !important;
+}
+
+/* ---------- side menu (portfolio): stop letter wrap, brutal active state ---------- */
+[class*="oui-side-menu"] button,
+aside button, aside a {
+  white-space: nowrap !important;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+aside .oui-bg-base-5, aside [class*="oui-bg-base-"] {
+  background: var(--tt-orange) !important;
+  color: #000 !important;
+  border: 2px solid #000;
+}
+aside {
+  border-right: 2px solid var(--tt-grid);
+}
+
+/* ---------- broaden panel treatment ---------- */
+.oui-box.oui-rounded-xl.oui-bg-base-9,
+.oui-box.oui-rounded-lg.oui-bg-base-9,
+main .oui-table-root,
+[class*="oui-leaderboard"] > div > div {
+  border: 4px solid #000;
+  box-shadow: 7px 8px 0 #000;
+  background: var(--tt-panel) !important;
+}
+/* avoid double borders on nested tables inside already-bordered cards */
+.oui-card-root .oui-table-root,
+.oui-box.oui-rounded-2xl .oui-table-root {
+  border: none;
+  box-shadow: none;
+}
+
+/* markets/leaderboard page wrappers get breathing room for shadows */
+main > div {
+  padding-right: 10px;
+}
+
+/* ---------- heavier controls ---------- */
+button.oui-button[data-type="secondary"],
+button.oui-button[data-type="outlined"],
+[class*="oui-picker"] button,
+button[class*="oui-border"] {
+  border: 2px solid #000 !important;
+  background: var(--tt-panel);
+  color: #000;
+}
+
+/* search inputs: chunky */
+[class*="oui-input-root"]:has(input[placeholder]),
+div:has(> input[placeholder]) {
+  border: 2px solid #000 !important;
+  background: var(--tt-panel) !important;
+}
+input::placeholder { color: #4a463d !important; opacity: 1; }
+
+/* segmented/timeframe buttons active state */
+button[data-state="active"], button[aria-pressed="true"] {
+  background: var(--tt-black) !important;
+  color: #fff !important;
+}
+
+/* ---------- TT branding elements ---------- */
+.tt-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.tt-logo {
+  font-family: var(--tt-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.85;
+  color: #000;
+  font-size: 28px;
+  white-space: nowrap;
+}
+.tt-logo .tt-logo-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--tt-orange);
+  border: 2px solid #000;
+  margin-left: 6px;
+}
+
+.tt-tagline {
+  font-family: var(--tt-display);
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  background: var(--tt-black);
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #000;
+}
+.tt-tagline::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--tt-orange);
+  display: inline-block;
+}
+
+/* keep white glyph text inside black modules */
+table thead svg text, footer svg text, [data-state="active"] svg text { fill: #fff !important; }
+
+/* sidebar menu: stop mid-word wrapping (oui-break-all) */
+.oui-break-all { word-break: normal !important; overflow-wrap: normal !important; white-space: nowrap !important; }
+
+/* fixed bottom status bar: keep content clear of it */
+main { padding-bottom: 44px !important; }
+
+/* header: keep brand compact so nav does not clip */
+.tt-brand { gap: 10px; }
+.tt-logo { font-size: 22px; }
+.tt-tagline { font-size: 11px; padding: 4px 10px; }
+@media (max-width: 1180px) {
+  .tt-tagline { display: none; }
+}
+
+/* leaderboard trophy imagery: flatten */
+img[src*="trophy"], img[src*="medal"], img[src*="rank"] {
+  filter: grayscale(1) contrast(1.6);
+}
