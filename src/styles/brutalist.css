@@ -657,3 +657,153 @@ footer.oui-scaffold-bottomNav svg path[fill="white"],
 footer.oui-scaffold-bottomNav svg path[fill="#FFF"] {
   fill: #000 !important;
 }
+
+/* portfolio mobile promo art (Affiliates/Rebates 3D icons): monochrome */
+main img[src*="affiliate" i], main img[src*="rebate" i],
+main div[class*="oui-bg-contain"] {
+  filter: grayscale(1) contrast(1.4);
+}
+
+/* mobile header: give the page title room so it does not kiss the globe */
+@media (max-width: 768px) {
+  header.oui-scaffold-topNavbar span.oui-text-2xl,
+  [class*="oui-scaffold-topNavbar"] span.oui-text-2xl {
+    margin-right: 8px;
+    font-family: var(--tt-display);
+  }
+}
+
+/* leaderboard rank medal images: hide default SDK art, show display rank */
+.oui-trading-leaderboard-general-leaderboard img[class*="oui-size"],
+td img[width="40"], td img[height="40"] {
+  filter: grayscale(1) contrast(1.6);
+}
+
+/* header fit: the tagline wraps into a 3-line block and the last nav item
+   clips once COMP joined the nav. Keep the tagline to one line and hide it
+   sooner; let nav items shrink slightly instead of truncating. */
+.tt-tagline { white-space: nowrap; }
+@media (max-width: 1500px) {
+  .tt-tagline { display: none; }
+}
+header.oui-scaffold-topNavbar nav a,
+header.oui-scaffold-topNavbar nav button {
+  white-space: nowrap;
+}
+
+/* leaderboard trophy art on the black top-3 rows: dark on dark, invert it */
+.oui-trading-leaderboard-general-leaderboard tr:nth-child(-n+3) img,
+tr[class*="oui-bg-black"] img {
+  filter: grayscale(1) invert(1) contrast(1.4) !important;
+}
+
+/* leaderboard pagination row: give it room above the fixed status bar */
+.oui-trading-leaderboard-general-leaderboard {
+  margin-bottom: 48px !important;
+}
+
+/* low-contrast white chevrons/gears on cream cards (mobile portfolio) */
+main svg path[stroke="#fff"], main svg path[stroke="white"] {
+  stroke: #000 !important;
+}
+main svg path[fill="#fff"]:not(footer *):not(thead *),
+main .oui-text-white svg path {
+  fill: #000 !important;
+}
+/* but keep white glyphs inside black tiles (deposit/withdraw/history icons) */
+div[class*="oui-size-[48px]"] svg path,
+[data-state="active"] svg path,
+thead svg path {
+  fill: #fff !important;
+}
+
+/* top-3 badge art ("1th badge" pngs): white version on the black rows */
+img[alt*="badge"] {
+  filter: grayscale(1) invert(1) brightness(1.6) !important;
+  opacity: 0.9 !important;
+  mix-blend-mode: normal !important;
+}
+
+/* nav width: shrink logo a touch and tighten nav gaps so all items fit at
+   1440 with COMP + REWARDS in the menu */
+.tt-logo { font-size: 19px; }
+header.oui-main-nav { gap: 8px !important; }
+header.oui-main-nav nav, header.oui-main-nav > div {
+  min-width: 0;
+}
+@media (max-width: 1560px) {
+  .tt-tagline { display: none; }
+}
+
+/* nav items still clip at 1440 with 6 entries: condense them */
+@media (max-width: 1600px) {
+  header.oui-main-nav nav a,
+  header.oui-main-nav nav button,
+  header.oui-main-nav [class*="oui-main-nav"] a {
+    font-size: 13px !important;
+    letter-spacing: 0 !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+/* ---------- web3-onboard connect modal (shadow DOM, themed via vars) ---- */
+:root {
+  --onboard-white: #F6F1E7;
+  --onboard-black: #030303;
+  --onboard-primary-1: #000000;
+  --onboard-primary-100: #E6E0D5;
+  --onboard-primary-200: #E6E0D5;
+  --onboard-primary-300: #FF3D0A;
+  --onboard-primary-400: #FF3D0A;
+  --onboard-primary-500: #FF3D0A;
+  --onboard-primary-600: #d62d00;
+  --onboard-primary-700: #b02500;
+  --onboard-gray-100: #F6F1E7;
+  --onboard-gray-200: #55524a;
+  --onboard-gray-300: #8C887E;
+  --onboard-gray-400: #6E6A64;
+  --onboard-gray-500: #171717;
+  --onboard-gray-600: #0a0a0a;
+  --onboard-gray-700: #030303;
+  --onboard-success-100: #d9eadf;
+  --onboard-success-500: #19833B;
+  --onboard-danger-500: #FF3D0A;
+  --onboard-modal-background: #F6F1E7;
+  --onboard-modal-color: #000000;
+  --onboard-modal-border-radius: 0;
+  --onboard-modal-box-shadow: 7px 8px 0 #000;
+  --onboard-connect-sidebar-background: #030303;
+  --onboard-connect-sidebar-color: #ffffff;
+  --onboard-connect-sidebar-progress-background: #6E6A64;
+  --onboard-connect-sidebar-progress-color: #FF3D0A;
+  --onboard-connect-header-background: #030303;
+  --onboard-connect-header-color: #ffffff;
+  --onboard-main-scroll-container-background: #F6F1E7;
+  --onboard-link-color: #FF3D0A;
+  --onboard-close-button-background: #FF3D0A;
+  --onboard-close-button-color: #000000;
+  --onboard-checkbox-background: #F6F1E7;
+  --onboard-checkbox-color: #FF3D0A;
+  --onboard-wallet-button-background: #F6F1E7;
+  --onboard-wallet-button-background-hover: #E6E0D5;
+  --onboard-wallet-button-color: #000000;
+  --onboard-wallet-button-border-color: #000000;
+  --onboard-wallet-button-border-radius: 0;
+  --onboard-wallet-button-box-shadow: 4px 4px 0 #000;
+  --onboard-wallet-app-icon-border-color: #000000;
+  --onboard-font-family-normal: 'Barlow Condensed', 'Roboto Condensed', sans-serif;
+  --onboard-font-family-semibold: 'Barlow Condensed', sans-serif;
+  --onboard-font-family-light: 'Barlow Condensed', sans-serif;
+  --onboard-border-radius-1: 0;
+  --onboard-border-radius-2: 0;
+  --onboard-border-radius-3: 0;
+  --onboard-spacing-4: 12px;
+  --w3o-background-color: #F6F1E7;
+  --w3o-foreground-color: #F3EFE5;
+  --w3o-text-color: #000000;
+  --w3o-border-color: #000000;
+  --w3o-action-color: #FF3D0A;
+  --w3o-border-radius: 0;
+  --w3o-font-family: 'Barlow Condensed', sans-serif;
+}
