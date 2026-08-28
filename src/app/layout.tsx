@@ -3,8 +3,8 @@ import OrderlyProvider from "@/components/orderlyProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Trench Terminal",
-  description: "Trench Terminal, perps DEX powered by Orderly",
+  title: "TRENCH TERMINAL",
+  description: "TRENCH TERMINAL. Perps. No KYC. Pure edge.",
 };
 
 type RootLayoutProps = Readonly<{

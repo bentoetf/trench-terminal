@@ -458,3 +458,151 @@ div[class*="oui-size-[48px]"][class*="oui-bg-base"] {
     display: none !important;
   }
 }
+
+/* ============================================================
+   Polish pass, 2026-08-28: spec sweep
+   ============================================================ */
+
+/* Risk/margin card: kill the pastel teal-orange-pink gradient meter,
+   replace with a flat muted track with a black border */
+.oui-bg-gradient-to-r[class*="oui-from-"][class*="oui-via-"],
+.oui-bg-gradient-to-r[class*="oui-from-"][class*="oui-to-"] {
+  background: var(--tt-muted-fill) !important;
+  background-image: none !important;
+  border: 1.5px solid #000;
+  opacity: 1 !important;
+}
+
+/* decorative blur/conic-gradient glows (SDK eye candy): remove */
+[class*="oui-blur-["],
+[class*="oui-blur-2xl"], [class*="oui-blur-3xl"] {
+  display: none !important;
+}
+
+/* any leftover non-button gradient fill: flatten to panel cream */
+div[class*="oui-bg-gradient"]:not([class*="oui-from-"]) {
+  background-image: none !important;
+}
+
+/* inactive tabs and small pill buttons: real black hairline instead of
+   washed gray so controls read as intentional */
+[role="tab"]:not([data-state="active"]):not([aria-selected="true"]) {
+  border: 1.5px solid #000 !important;
+  color: #000;
+}
+
+/* generic small controls (Layout, Last Trades, interval pickers, selects):
+   1.5px black border per spec controls weight */
+button.oui-button[data-type="default"],
+button.oui-button[data-type="gray"],
+[class*="oui-select-trigger"],
+[role="combobox"] {
+  border: 1.5px solid #000 !important;
+  background: var(--tt-panel) !important;
+  color: #000 !important;
+}
+
+/* dropdown menu content: cream panel, black border, hard shadow */
+[role="listbox"], [role="menu"],
+[data-radix-popper-content-wrapper] [role="listbox"],
+[data-radix-popper-content-wrapper] [role="menu"] {
+  background: var(--tt-panel) !important;
+  border: 2px solid #000 !important;
+  box-shadow: 4px 4px 0 #000 !important;
+}
+[role="option"]:hover, [role="menuitem"]:hover {
+  background: var(--tt-muted-fill) !important;
+}
+
+/* card/section titles that the SDK leaves in mixed case: uppercase */
+main span.oui-text-lg, main div.oui-text-lg,
+main span.oui-text-base, aside span,
+[class*="oui-side-menu"] span {
+  text-transform: uppercase;
+}
+
+/* empty states ("Please connect wallet...") read as deliberate:
+   uppercase condensed, solid black */
+main .oui-text-base-contrast-36,
+main .oui-text-base-contrast-54 {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* placeholder dashes and unloaded $0.00: muted ink instead of glaring */
+main span:where(.oui-text-base-contrast-20, .oui-text-base-contrast-12) {
+  color: #6E6A64 !important;
+}
+
+/* portfolio sidebar: full 2px black frame instead of washed gray */
+aside {
+  border-right: 2px solid #000 !important;
+}
+
+/* portfolio mobile promo cards (Affiliates/Rebates pastel borders): black */
+main div[class*="oui-border-"][class*="oui-rounded"] {
+  border-color: #000 !important;
+}
+
+/* checkbox/radio controls: square, black */
+[role="checkbox"], input[type="checkbox"] {
+  border: 1.5px solid #000 !important;
+  background: var(--tt-panel);
+}
+[role="checkbox"][data-state="checked"], input[type="checkbox"]:checked {
+  background: var(--tt-orange) !important;
+}
+
+/* sliders: chunkier brutalist track and square thumb */
+[role="slider"] {
+  border: 2px solid #000 !important;
+  background: var(--tt-orange) !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* mobile bottom nav: heavy black top border, uppercase labels */
+@media (max-width: 768px) {
+  nav[class*="oui-scaffold-bottomNav"],
+  [class*="oui-bottom-nav"],
+  body > div > div > nav:last-child {
+    border-top: 4px solid #000 !important;
+    background: var(--tt-panel) !important;
+  }
+  nav[class*="oui-scaffold-bottomNav"] span,
+  [class*="oui-bottom-nav"] span {
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #000 !important;
+  }
+  /* header: keep CONNECT button fully visible at 390px */
+  header.oui-scaffold-topNavbar,
+  [class*="oui-scaffold-topNavbar"] {
+    padding-right: 8px !important;
+  }
+  [class*="oui-wallet-connect"] button,
+  button[class*="gradient"] {
+    box-shadow: 3px 3px 0 #000;
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap;
+  }
+}
+
+/* leaderboard medal artwork: flatten to monochrome so it sits in theme */
+[class*="oui-leaderboard"] img,
+img[src*="medal" i], img[src*="rank" i], img[src*="trophy" i] {
+  filter: grayscale(1) contrast(1.5) !important;
+}
+
+/* order entry BUY/SELL side tabs: strong states */
+[data-testid*="order-entry"] [role="tab"],
+button[id*="buy" i][role="tab"], button[id*="sell" i][role="tab"] {
+  border: 1.5px solid #000 !important;
+}
+
+/* black interval/price pills on chart stay square and bordered */
+[class*="oui-tooltip"], [class*="price-label"] {
+  border-radius: 0 !important;
+}

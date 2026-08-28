@@ -97,11 +97,11 @@ export const useOrderlyConfig = () => {
             { name: t("common.trading"), href: PathEnum.Root },
             { name: t("common.portfolio"), href: PathEnum.Portfolio },
             { name: t("common.markets"), href: PathEnum.Markets },
+            { name: "Comp", href: PathEnum.Competition },
             {
               name: t("tradingLeaderboard.leaderboard"),
               href: PathEnum.Leaderboard,
             },
-            { name: "Competition", href: PathEnum.Competition },
             {
               name: t("tradingRewards.rewards"),
               href: PathEnum.Rewards,
