@@ -4,7 +4,7 @@
 // the real order entry + positions area while paper mode is on.
 // Talks only to our backend; never touches Orderly order flow.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   paperApi,
@@ -42,14 +42,42 @@ export function PaperBanner() {
   );
 }
 
-// Overlays the SDK bottom positions pane with paper positions while paper
-// mode is on. The SDK widget knows nothing about paper trades, so we cover
-// it instead of leaving it empty and confusing.
+// Overlays the SDK bottom positions pane with a tabbed paper view while
+// paper mode is on, mirroring the live Orderly widget's tab bar. The SDK
+// widget knows nothing about paper trades, so we cover it.
+
+const DOCK_TABS = [
+  "POSITIONS",
+  "PENDING",
+  "TP/SL",
+  "FILLED",
+  "POSITION HISTORY",
+  "ORDER HISTORY",
+  "LIQUIDATION",
+  "ASSETS",
+] as const;
+type DockTab = (typeof DOCK_TABS)[number];
+
+const sym = (s: string) => s.replace("PERP_", "").replace("_USDC", "");
+const ts = (t: number) =>
+  new Date(t).toLocaleString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+function Empty({ label }: { label: string }) {
+  return <div className="tt-paper-dock-empty">{label}</div>;
+}
+
 export function PaperPositionsDock() {
   const { enabled, wallet } = usePaperMode();
   const [account, setAccount] = useState<PaperAccountView | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tab, setTab] = useState<DockTab>("POSITIONS");
 
   const refresh = useCallback(async () => {
     if (!wallet) return;
@@ -96,10 +124,10 @@ export function PaperPositionsDock() {
 
   if (!enabled || !host) return null;
 
-  const close = async (sym: string) => {
+  const close = async (symbolFull: string) => {
     setBusy(true);
     try {
-      const r = await paperApi.closePosition(wallet, sym);
+      const r = await paperApi.closePosition(wallet, symbolFull);
       setAccount(r.account);
       emitPaperUpdate();
     } catch {} finally {
@@ -107,12 +135,228 @@ export function PaperPositionsDock() {
     }
   };
 
+  const cancel = async (id: string) => {
+    setBusy(true);
+    try {
+      await paperApi.cancelOrder(wallet, id);
+      await refresh();
+      emitPaperUpdate();
+    } catch {} finally {
+      setBusy(false);
+    }
+  };
+
+  const reset = async () => {
+    if (!window.confirm("Reset paper account to 10,000 USDC? All positions and history wiped.")) return;
+    setBusy(true);
+    try {
+      const a = await paperApi.reset(wallet);
+      setAccount(a);
+      emitPaperUpdate();
+    } catch (e) {
+      window.alert(String((e as Error).message));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const positions = account?.positions ?? [];
+  const openOrders = account?.openOrders ?? [];
+  const fills = account?.history ?? [];
+  const orders = account?.orders ?? [];
+  const closedPositions = account?.closedPositions ?? [];
+  const liquidations = closedPositions.filter((c) => c.reason === "LIQUIDATION");
+
+  const posneg = (n: number) => (n >= 0 ? "pos" : "neg");
+  const signed = (n: number, d = 2) => `${n >= 0 ? "+" : ""}${fmt(n, d)}`;
+
+  let body: ReactNode;
+  switch (tab) {
+    case "POSITIONS":
+      body = positions.length === 0 ? (
+        <Empty label="NO OPEN PAPER POSITIONS." />
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>MARKET</th><th>SIDE</th><th>QTY</th><th>ENTRY</th><th>MARK</th><th>LIQ</th><th>NOTIONAL</th><th>UPNL</th><th />
+            </tr>
+          </thead>
+          <tbody>
+            {positions.map((p) => (
+              <tr key={p.symbol}>
+                <td><b>{sym(p.symbol)}</b></td>
+                <td className={p.qty > 0 ? "pos" : "neg"}>{p.qty > 0 ? "LONG" : "SHORT"} {p.leverage}X</td>
+                <td>{fmt(Math.abs(p.qty), 4)}</td>
+                <td>{fmt(p.entryPrice)}</td>
+                <td>{fmt(p.markPrice)}</td>
+                <td>{fmt(p.liqPrice)}</td>
+                <td>{fmt(p.notional)}</td>
+                <td className={posneg(p.unrealizedPnl)}>{signed(p.unrealizedPnl)}</td>
+                <td><button onClick={() => close(p.symbol)} disabled={busy}>CLOSE</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "PENDING":
+      body = openOrders.length === 0 ? (
+        <Empty label="NO PENDING PAPER ORDERS." />
+      ) : (
+        <table>
+          <thead>
+            <tr><th>MARKET</th><th>SIDE</th><th>QTY</th><th>LIMIT PRICE</th><th>CREATED</th><th /></tr>
+          </thead>
+          <tbody>
+            {openOrders.map((o) => (
+              <tr key={o.id}>
+                <td><b>{sym(o.symbol)}</b></td>
+                <td className={o.side === "BUY" ? "pos" : "neg"}>{o.side} {o.leverage}X</td>
+                <td>{fmt(o.qty, 4)}</td>
+                <td>{o.price != null ? fmt(o.price) : "MKT"}</td>
+                <td>{ts(o.createdAt)}</td>
+                <td><button onClick={() => cancel(o.id)} disabled={busy}>CANCEL</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "TP/SL":
+      body = <Empty label="TP/SL ORDERS: COMING SOON TO PAPER MODE." />;
+      break;
+    case "FILLED":
+      body = fills.length === 0 ? (
+        <Empty label="NO PAPER FILLS YET." />
+      ) : (
+        <table>
+          <thead>
+            <tr><th>MARKET</th><th>SIDE</th><th>QTY</th><th>FILL PRICE</th><th>FEE</th><th>REALIZED PNL</th><th>TYPE</th><th>TIME</th></tr>
+          </thead>
+          <tbody>
+            {fills.map((f) => (
+              <tr key={f.id}>
+                <td><b>{sym(f.symbol)}</b></td>
+                <td className={f.side === "BUY" ? "pos" : "neg"}>{f.side}</td>
+                <td>{fmt(f.qty, 4)}</td>
+                <td>{fmt(f.price)}</td>
+                <td>{fmt(f.fee, 4)}</td>
+                <td className={posneg(f.realizedPnl)}>{f.realizedPnl !== 0 ? signed(f.realizedPnl) : "-"}</td>
+                <td>{f.reason}</td>
+                <td>{ts(f.timestamp)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "POSITION HISTORY":
+      body = closedPositions.length === 0 ? (
+        <Empty label="NO CLOSED PAPER POSITIONS YET." />
+      ) : (
+        <table>
+          <thead>
+            <tr><th>MARKET</th><th>SIDE</th><th>QTY</th><th>ENTRY</th><th>EXIT</th><th>REALIZED PNL</th><th>REASON</th><th>OPENED</th><th>CLOSED</th></tr>
+          </thead>
+          <tbody>
+            {closedPositions.map((c) => (
+              <tr key={c.id}>
+                <td><b>{sym(c.symbol)}</b></td>
+                <td className={c.side === "LONG" ? "pos" : "neg"}>{c.side}</td>
+                <td>{fmt(c.qty, 4)}</td>
+                <td>{fmt(c.entryPrice)}</td>
+                <td>{fmt(c.exitPrice)}</td>
+                <td className={posneg(c.realizedPnl)}>{signed(c.realizedPnl)}</td>
+                <td>{c.reason}</td>
+                <td>{ts(c.openedAt)}</td>
+                <td>{ts(c.closedAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "ORDER HISTORY":
+      body = orders.length === 0 ? (
+        <Empty label="NO PAPER ORDERS YET." />
+      ) : (
+        <table>
+          <thead>
+            <tr><th>MARKET</th><th>SIDE</th><th>TYPE</th><th>QTY</th><th>PRICE</th><th>FILL PRICE</th><th>STATUS</th><th>CREATED</th></tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id}>
+                <td><b>{sym(o.symbol)}</b></td>
+                <td className={o.side === "BUY" ? "pos" : "neg"}>{o.side} {o.leverage}X</td>
+                <td>{o.type}</td>
+                <td>{fmt(o.qty, 4)}</td>
+                <td>{o.price != null ? fmt(o.price) : "MKT"}</td>
+                <td>{o.filledPrice != null ? fmt(o.filledPrice) : "-"}</td>
+                <td>{o.status}</td>
+                <td>{ts(o.createdAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "LIQUIDATION":
+      body = liquidations.length === 0 ? (
+        <Empty label="NO PAPER LIQUIDATIONS. KEEP IT THAT WAY." />
+      ) : (
+        <table>
+          <thead>
+            <tr><th>MARKET</th><th>SIDE</th><th>QTY</th><th>ENTRY</th><th>LIQ PRICE</th><th>LOSS</th><th>TIME</th></tr>
+          </thead>
+          <tbody>
+            {liquidations.map((c) => (
+              <tr key={c.id}>
+                <td><b>{sym(c.symbol)}</b></td>
+                <td className={c.side === "LONG" ? "pos" : "neg"}>{c.side}</td>
+                <td>{fmt(c.qty, 4)}</td>
+                <td>{fmt(c.entryPrice)}</td>
+                <td>{fmt(c.exitPrice)}</td>
+                <td className="neg">{fmt(c.realizedPnl)}</td>
+                <td>{ts(c.closedAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+      break;
+    case "ASSETS":
+      body = account ? (
+        <div className="tt-paper-assets">
+          <div className="tt-paper-assets-grid">
+            <div><label>BALANCE (FREE COLLATERAL)</label><b>${fmt(account.balance)}</b></div>
+            <div><label>EQUITY</label><b>${fmt(account.equity)}</b></div>
+            <div><label>UNREALIZED PNL</label><b className={posneg(account.unrealizedPnl)}>{signed(account.unrealizedPnl)}</b></div>
+            <div><label>MARGIN USED</label><b>${fmt(account.marginLocked)}</b></div>
+            <div><label>START BALANCE</label><b>${fmt(account.startBalance)}</b></div>
+            <div><label>PNL %</label><b className={posneg(account.pnlPercent)}>{signed(account.pnlPercent)}%</b></div>
+          </div>
+          <button className="tt-paper-assets-reset" onClick={reset} disabled={busy}>
+            RESET ACCOUNT TO 10,000 USDC
+          </button>
+          <div className="tt-paper-assets-note">1 RESET PER 24H. RESETS LOCKED DURING ACTIVE COMPETITIONS.</div>
+        </div>
+      ) : (
+        <Empty label="LOADING ACCOUNT..." />
+      );
+      break;
+  }
+
+  const counts: Partial<Record<DockTab, number>> = {
+    POSITIONS: positions.length,
+    PENDING: openOrders.length,
+  };
 
   return createPortal(
     <div className="tt-paper-dock">
       <div className="tt-paper-dock-head">
-        <span>PAPER POSITIONS</span>
+        <span>PAPER</span>
         <span className="bal">
           BAL ${account ? fmt(account.balance) : "…"} · EQUITY ${account ? fmt(account.equity) : "…"} ·{" "}
           <span className={account && account.unrealizedPnl < 0 ? "neg" : "pos"}>
@@ -121,43 +365,21 @@ export function PaperPositionsDock() {
           </span>
         </span>
       </div>
-      {positions.length === 0 ? (
-        <div className="tt-paper-dock-empty">NO OPEN PAPER POSITIONS.</div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>MARKET</th>
-              <th>SIDE</th>
-              <th>QTY</th>
-              <th>ENTRY</th>
-              <th>MARK</th>
-              <th>LIQ</th>
-              <th>NOTIONAL</th>
-              <th>UPNL</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {positions.map((p) => (
-              <tr key={p.symbol}>
-                <td><b>{p.symbol.replace("PERP_", "").replace("_USDC", "")}</b></td>
-                <td className={p.qty > 0 ? "pos" : "neg"}>{p.qty > 0 ? "LONG" : "SHORT"} {p.leverage}X</td>
-                <td>{fmt(Math.abs(p.qty), 4)}</td>
-                <td>{fmt(p.entryPrice)}</td>
-                <td>{fmt(p.markPrice)}</td>
-                <td>{fmt(p.liqPrice)}</td>
-                <td>{fmt(p.notional)}</td>
-                <td className={p.unrealizedPnl >= 0 ? "pos" : "neg"}>
-                  {p.unrealizedPnl >= 0 ? "+" : ""}
-                  {fmt(p.unrealizedPnl)}
-                </td>
-                <td><button onClick={() => close(p.symbol)} disabled={busy}>CLOSE</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <div className="tt-paper-dock-tabs" role="tablist">
+        {DOCK_TABS.map((t) => (
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            className={tab === t ? "active" : ""}
+            onClick={() => setTab(t)}
+          >
+            {t}
+            {counts[t] ? ` (${counts[t]})` : ""}
+          </button>
+        ))}
+      </div>
+      <div className="tt-paper-dock-body">{body}</div>
     </div>,
     host,
   );

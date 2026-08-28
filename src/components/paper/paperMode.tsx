@@ -96,6 +96,8 @@ export interface PaperOrderView {
   leverage: number;
   status: string;
   createdAt: number;
+  filledPrice?: number | null;
+  filledAt?: number | null;
 }
 
 export interface PaperFillView {
@@ -110,6 +112,20 @@ export interface PaperFillView {
   timestamp: number;
 }
 
+export interface PaperClosedPositionView {
+  id: string;
+  symbol: string;
+  side: "LONG" | "SHORT";
+  qty: number;
+  entryPrice: number;
+  exitPrice: number;
+  realizedPnl: number;
+  fee: number;
+  reason: string;
+  openedAt: number;
+  closedAt: number;
+}
+
 export interface PaperAccountView {
   wallet: string;
   balance: number;
@@ -121,6 +137,8 @@ export interface PaperAccountView {
   positions: PaperPositionView[];
   openOrders: PaperOrderView[];
   history: PaperFillView[];
+  orders?: PaperOrderView[];
+  closedPositions?: PaperClosedPositionView[];
 }
 
 async function req(path: string, init?: RequestInit) {

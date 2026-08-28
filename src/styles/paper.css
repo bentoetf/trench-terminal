@@ -320,7 +320,84 @@
 .tt-paper-dock-empty {
   font-family: var(--tt-mono);
   font-size: 13px;
-  padding: 10px 0;
+  padding: 14px 2px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #444;
+}
+/* tab bar matching the live Orderly widget's brutalist tabs */
+.tt-paper-dock-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 8px;
+}
+.tt-paper-dock-tabs button {
+  font-family: var(--tt-cond);
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border: 1.5px solid var(--tt-grid);
+  background: var(--tt-panel);
+  color: #171717;
+  cursor: pointer;
+}
+.tt-paper-dock-tabs button.active {
+  background: var(--tt-black);
+  color: #fff;
+  border-color: #000;
+}
+.tt-paper-dock-body {
+  min-height: 60px;
+}
+/* assets tab */
+.tt-paper-assets {
+  padding: 6px 0;
+}
+.tt-paper-assets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tt-paper-assets-grid > div {
+  border: 1.5px solid var(--tt-grid);
+  padding: 8px 10px;
+}
+.tt-paper-assets-grid label {
+  display: block;
+  font-family: var(--tt-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #555;
+  margin-bottom: 2px;
+}
+.tt-paper-assets-grid b {
+  font-family: var(--tt-mono);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.tt-paper-assets-grid .pos { color: var(--tt-green); }
+.tt-paper-assets-grid .neg { color: var(--tt-orange); }
+.tt-paper-assets-reset {
+  font-family: var(--tt-display);
+  font-size: 13px;
+  background: var(--tt-orange);
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.tt-paper-assets-reset:disabled { opacity: 0.5; }
+.tt-paper-assets-note {
+  font-family: var(--tt-mono);
+  font-size: 10.5px;
+  color: #666;
+  margin-top: 8px;
 }
 .tt-paper-dock table {
   width: 100%;
