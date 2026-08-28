@@ -55,7 +55,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
     if (!wallet) return;
     try {
       const a = await paperApi.account(wallet);
-      setAccount(a);
+      if (a) setAccount(a);
       setOffline(false);
     } catch {
       setOffline(true);
@@ -134,8 +134,17 @@ export function PaperPanel({ symbol }: { symbol: string }) {
 
   const reset = async () => {
     if (!window.confirm("Reset paper account to 10,000 USDC? All positions and history wiped.")) return;
-    const a = await paperApi.reset(wallet).catch(() => null);
-    if (a) setAccount(a);
+    setMsg(null);
+    setBusy(true);
+    try {
+      const a = await paperApi.reset(wallet);
+      setAccount(a);
+      setMsg("ACCOUNT RESET TO 10,000 USDC");
+    } catch (e) {
+      setMsg(String((e as Error).message).toUpperCase());
+    } finally {
+      setBusy(false);
+    }
   };
 
   const pair = symbol.replace("PERP_", "").replace("_USDC", "/USDC");
@@ -144,7 +153,7 @@ export function PaperPanel({ symbol }: { symbol: string }) {
     <div className="tt-paper-panel">
       <div className="tt-paper-head">
         <span>PAPER TRADING</span>
-        <button className="tt-paper-reset" onClick={reset}>RESET</button>
+        <button className="tt-paper-reset" onClick={reset} disabled={busy}>RESET</button>
       </div>
 
       <div className="tt-paper-stats">

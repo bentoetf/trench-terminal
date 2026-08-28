@@ -292,3 +292,19 @@ body.tt-paper-on [class*="orderEntry"] {
     max-height: 55vh;
   }
 }
+
+/* Small phones (<=430px): lift the floating toggle above the bottom nav and
+   shrink it so it doesn't crowd the nav at 390px width. */
+@media (max-width: 430px) {
+  .tt-paper-toggle {
+    bottom: 96px;
+    right: 8px;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .tt-paper-panel {
+    bottom: 132px;
+  }
+}

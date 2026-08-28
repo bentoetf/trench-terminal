@@ -133,9 +133,22 @@ async function req(path: string, init?: RequestInit) {
   return body;
 }
 
+const EVM_ADDRESS = /^0x[0-9a-fA-F]{40}$/;
+
 export const paperApi = {
-  account: (wallet: string): Promise<PaperAccountView> =>
-    req(`/paper/accounts`, { method: "POST", body: JSON.stringify({ wallet }) }),
+  // Ensure-account: a 400/404 here just means "no account yet" (for example
+  // a placeholder wallet before hydration). Callers treat null as absent,
+  // no console error noise.
+  account: async (wallet: string): Promise<PaperAccountView | null> => {
+    if (!EVM_ADDRESS.test(wallet) || /^0x0{40}$/.test(wallet)) return null;
+    try {
+      return await req(`/paper/accounts`, { method: "POST", body: JSON.stringify({ wallet }) });
+    } catch (e) {
+      const m = (e as Error).message;
+      if (m.includes("400") || m.includes("404") || m.toLowerCase().includes("invalid wallet")) return null;
+      throw e;
+    }
+  },
   reset: (wallet: string): Promise<PaperAccountView> =>
     req(`/paper/accounts/${wallet}/reset`, { method: "POST" }),
   placeOrder: (p: {
