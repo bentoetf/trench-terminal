@@ -19,13 +19,16 @@ import {
   ColorType,
   CrosshairMode,
   HistogramSeries,
+  LineStyle,
   createChart,
   type CandlestickData,
   type HistogramData,
   type IChartApi,
+  type IPriceLine,
   type ISeriesApi,
   type UTCTimestamp,
 } from "lightweight-charts";
+import { paperApi, usePaperMode } from "../paper/paperMode";
 
 const API_BASE = "https://testnet-api.orderly.org";
 
@@ -102,6 +105,8 @@ export const LightweightChart: React.FC<{ symbol: string }> = ({ symbol }) => {
   const [tf, setTf] = useState<TF>(TIMEFRAMES[2]);
   const [ohlc, setOhlc] = useState<Bar | null>(null);
   const barsRef = useRef<Bar[]>([]);
+  const paperLinesRef = useRef<IPriceLine[]>([]);
+  const paper = usePaperMode();
 
   // create chart once
   useEffect(() => {
@@ -195,6 +200,73 @@ export const LightweightChart: React.FC<{ symbol: string }> = ({ symbol }) => {
       clearInterval(id);
     };
   }, [symbol, tf]);
+
+  // Paper mode: draw entry + liquidation price lines for an open paper
+  // position on this symbol. Lines clear when paper mode is off, no
+  // position exists, or the symbol changes. Live mode untouched.
+  useEffect(() => {
+    const clearLines = () => {
+      const s = candleRef.current;
+      if (s) for (const l of paperLinesRef.current) s.removePriceLine(l);
+      paperLinesRef.current = [];
+    };
+    if (!paper.enabled || !paper.wallet) {
+      clearLines();
+      return;
+    }
+    let cancelled = false;
+    let lastKey = "";
+    const sync = async () => {
+      try {
+        const acct = await paperApi.account(paper.wallet);
+        if (cancelled || !candleRef.current) return;
+        const pos = acct?.positions.find(
+          (p) => p.symbol === symbol && p.qty !== 0,
+        );
+        const key = pos
+          ? `${pos.qty}|${pos.entryPrice}|${pos.liqPrice}`
+          : "";
+        if (key === lastKey) return;
+        lastKey = key;
+        clearLines();
+        if (!pos) return;
+        const long = pos.qty > 0;
+        const sideColor = long ? "#3FA462" : "#FF3D0A";
+        const s = candleRef.current;
+        paperLinesRef.current.push(
+          s.createPriceLine({
+            price: pos.entryPrice,
+            color: sideColor,
+            lineWidth: 2,
+            lineStyle: LineStyle.Solid,
+            axisLabelVisible: true,
+            title: `PAPER ENTRY ${long ? "LONG" : "SHORT"}`,
+          }),
+        );
+        if (pos.liqPrice > 0) {
+          paperLinesRef.current.push(
+            s.createPriceLine({
+              price: pos.liqPrice,
+              color: "#FF3D0A",
+              lineWidth: 2,
+              lineStyle: LineStyle.Dashed,
+              axisLabelVisible: true,
+              title: "PAPER LIQ",
+            }),
+          );
+        }
+      } catch {
+        /* transient fetch error, next poll retries */
+      }
+    };
+    void sync();
+    const id = setInterval(() => void sync(), 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      clearLines();
+    };
+  }, [paper.enabled, paper.wallet, symbol]);
 
   const pair = useMemo(
     () => symbol.replace(/^PERP_/, "").replace(/_/g, "-"),
